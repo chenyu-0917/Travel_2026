@@ -72,10 +72,11 @@
             transition: all 0.2s ease;
         }
         /* 各條地鐵線選中時的官方代表色 */
+        .sub-tab-btn.active.line-1 { background-color: #0d3692; color: white; }
         .sub-tab-btn.active.line-2 { background-color: #37b44a; color: white; }
         .sub-tab-btn.active.line-3 { background-color: #fa5f2c; color: white; }
         .sub-tab-btn.active.line-4 { background-color: #389ce3; color: white; }
-        .sub-tab-btn.active.line-1 { background-color: #0d3692; color: white; }
+        .sub-tab-btn.active.line-5 { background-color: #9B5094; color: white; }
 
         /* 地鐵路線內容區塊 */
         .line-content {
@@ -167,12 +168,15 @@
         .border-green { border-left-color: #06D6A0; }
         .border-pink { border-left-color: #FF006E; }
         .border-orange { border-left-color: #FB5607; }
+        .border-purple { border-left-color: #9B5094; }
+        .border-gray { border-left-color: #E2E4F6; }
 
         /* 地鐵線專用邊框色（對應韓國官方線路顏色） */
+        .border-line1 { border-left-color: #0d3692; }
         .border-line2 { border-left-color: #37b44a; }
         .border-line3 { border-left-color: #fa5f2c; }
         .border-line4 { border-left-color: #389ce3; }
-        .border-line1 { border-left-color: #0d3692; }
+        .border-line5 { border-left-color: #9B5094; }
 
         .time {
             font-size: 13px;
@@ -230,7 +234,7 @@
     <!-- ==================== 行李準備 ==================== -->
     <div id="daypack" class="day-content active">
         <div class="header">
-            <h1>韓國出發前 · 行李檢查清單</h1>
+            <h1>🇰🇷 韓國出發前 · 行李檢查清單</h1>
             <p>點擊可勾選已準備好的項目，文字會自動產生刪除線。</p>
         </div>
 
@@ -304,7 +308,7 @@
     <!-- ==================== DAY 1 ==================== -->
     <div id="day1" class="day-content">
         <div class="header">
-            <h1>抵達首爾 · 明洞掃貨 × 乙支路</h1>
+            <h1>抵達首爾 · 明洞掃貨 × 乙支路 🛍️</h1>
             <p>07:50 桃園出發 → 11:20 仁川落地，下午開始活動</p>
         </div>
 
@@ -318,7 +322,7 @@
         <div class="card border-pink">
             <div class="time">14:00 – 15:00</div>
             <div class="title">💱 明洞大使館換錢 + 掃貨</div>
-            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗館店、Olive Better 補貨、大創一次搞定。</div>
+            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗館店、大創一次搞定。</div>
             <div class="tag-container">
                 <div class="tag">換錢</div>
                 <div class="tag highlight">Olive Young</div>
@@ -326,7 +330,7 @@
             </div>
         </div>
 
-        <div class="card border-green">
+        <div class="card border-purple">
             <div class="time">15:00 – 17:30</div>
             <div class="title">🛍️ 光化門站 Olive Better</div>
             <div class="content">先搭地鐵到光化門站逛 Olive Better，這間在台灣比較沒有，趁早掃貨。</div>
@@ -472,24 +476,24 @@
         </div>
 
         <div class="card border-green">
-            <div class="time">07:30 – 09:00</div>
+            <div class="time">07:00 – 08:20</div>
             <div class="title">🍳 起床 + 住宿附近吃早餐</div>
             <div class="content">輕鬆吃個早餐，整理行李，把握最後的首爾晨曦。住宿旁便利商店或小食堂都可以。</div>
-            <div class="tag-container"><div class="tag">早餐</div></div>
+            <div class="tag-container"><div class="tag">Wageurwageul</div></div>
         </div>
 
         <div class="card border-blue">
-            <div class="time">09:30 出門</div>
-            <div class="title">🚇 搭 AREX 前往仁川機場</div>
-            <div class="content">從首爾站搭 AREX 約 50 分鐘抵達仁川機場，建議 09:30 出門，11:00 前抵達機場辦理登機手續。</div>
+            <div class="time">08:30 搭車</div>
+            <div class="title">🚇 搭機場巴士前往仁川機場</div>
+            <div class="content">從住宿搭機場巴士車程約 60 至 80 分鐘抵達仁川機場，10:00 前抵達機場辦理登機手續。</div>
             <div class="tag-container"><div class="tag">交通</div></div>
         </div>
 
         <div class="card border-orange">
-            <div class="time">12:30</div>
-            <div class="title">✈️ 仁川 → 桃園，14:20 抵達</div>
+            <div class="time">12:30 登機</div>
+            <div class="title">✈️ 仁川 → 桃園，預計14:20 抵達</div>
             <div class="content">滿載而歸，帶著滿滿戰利品平安回台灣！</div>
-            <div class="tag-container"><div class="tag">返程</div></div>
+            <div class="tag-container"><div class="tag">肥家</div></div>
         </div>
     </div>
 
@@ -499,19 +503,19 @@
             <h1> · 注意事項 · </h1>
         </div>
 
-        <div class="card border-green">
+        <div class="card border-gray">
+            <div class="title"> SES 快速入境</div>
+            <div class="content"></div>
+            <div class="tag-container"><div class="tag"></div></div>
+        </div>
+
+        <div class="card border-gray">
             <div class="title"></div>
             <div class="content"></div>
             <div class="tag-container"><div class="tag"></div></div>
         </div>
 
-        <div class="card border-blue">
-            <div class="title"></div>
-            <div class="content"></div>
-            <div class="tag-container"><div class="tag"></div></div>
-        </div>
-
-        <div class="card border-orange">
+        <div class="card border-gray">
             <div class="title"></div>
             <div class="content"></div>
             <div class="tag-container"><div class="tag"></div></div>
