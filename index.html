@@ -50,6 +50,42 @@
             font-weight: bold;
         }
 
+        /* ==================== 第二層：地鐵路線小標籤樣式 ==================== */
+        .sub-tab-menu {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background-color: #F5F5F5;
+            padding: 6px;
+            border-radius: 12px;
+        }
+        .sub-tab-btn {
+            background-color: transparent;
+            color: #666666;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            flex: 1;
+            transition: all 0.2s ease;
+        }
+        /* 各條地鐵線選中時的官方代表色 */
+        .sub-tab-btn.active.line-2 { background-color: #37b44a; color: white; }
+        .sub-tab-btn.active.line-3 { background-color: #fa5f2c; color: white; }
+        .sub-tab-btn.active.line-4 { background-color: #389ce3; color: white; }
+        .sub-tab-btn.active.line-1 { background-color: #0d3692; color: white; }
+
+        /* 地鐵路線內容區塊 */
+        .line-content {
+            display: none;
+        }
+        .line-content.active {
+            display: block;
+        }
+        /* ==================================================================== */
+
         /* 行程內容天數區塊 */
         .day-content {
             display: none;
@@ -132,6 +168,12 @@
         .border-pink { border-left-color: #FF006E; }
         .border-orange { border-left-color: #FB5607; }
 
+        /* 地鐵線專用邊框色（對應韓國官方線路顏色） */
+        .border-line2 { border-left-color: #37b44a; }
+        .border-line3 { border-left-color: #fa5f2c; }
+        .border-line4 { border-left-color: #389ce3; }
+        .border-line1 { border-left-color: #0d3692; }
+
         .time {
             font-size: 13px;
             color: #888888;
@@ -174,7 +216,7 @@
 
 <div class="container">
     
-    <!-- 1. 頂部切換按鈕 -->
+    <!-- 1. 頂部大分頁切換按鈕（第一層） -->
     <div class="tab-menu">
         <button class="tab-btn active" onclick="switchDay('pack', this)">行李準備</button>
         <button class="tab-btn" onclick="switchDay(1, this)">Day 1 ·<br>10/27</button>
@@ -182,6 +224,7 @@
         <button class="tab-btn" onclick="switchDay(3, this)">Day 3 ·<br>10/29</button>
         <button class="tab-btn" onclick="switchDay(4, this)">Day 4 ·<br>10/30</button>
         <button class="tab-btn" onclick="switchDay('memo', this)">備註</button>
+        <button class="tab-btn" onclick="switchDay('traffic', this)">地鐵</button>
     </div>
 
     <!-- ==================== 行李準備 ==================== -->
@@ -474,25 +517,132 @@
             <div class="tag-container"><div class="tag"></div></div>
         </div>
     </div>
+
+    <!-- ==================== 地鐵 ==================== -->
+    <div id="daytraffic" class="day-content">
+        <div class="header">
+            <h1>🚇 首爾地鐵沿線景點懶人包</h1>
+            <p>點擊下方地鐵線小標籤，可以快速切換各路線的核心觀光站點與特別景點！</p>
+        </div>
+
+        <!-- 第二層：小標籤切換鈕 -->
+        <div class="sub-tab-menu">
+            <button class="sub-tab-btn active line-2" onclick="switchLine('line2', this)">2號線</button>
+            <button class="sub-tab-btn line-3" onclick="switchLine('line3', this)">3號線</button>
+            <button class="sub-tab-btn line-4" onclick="switchLine('line4', this)">4號線</button>
+            <button class="sub-tab-btn line-1" onclick="switchLine('line1', this)">1號線</button>
+        </div>
+
+        <!-- 子分頁：1 號線內容 -->
+        <div id="line1" class="line-content">
+            <div class="card border-line1">
+                <div class="title">💙 首爾站</div>
+                <div class="content">最重要的交通大樞紐！不論是往返機場的 AREX 直達車，還是市區 KTX 都在這裡匯集。出站即有超大型樂天超市，方便最後大補貨。</div>
+                <div class="tag-container"><div class="tag">AREX</div><div class="tag">樂天超市</div></div>
+            </div>
+            <div class="card border-line1">
+                <div class="title">💙 鐘路3街站 (益善洞)</div>
+                <div class="content">近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。</div>
+                <div class="tag-container"><div class="tag">益善洞</div><div class="tag">老屋咖啡</div></div>
+            </div>
+        </div>
+
+        <!-- 子分頁：2 號線內容 -->
+        <div id="line2" class="line-content active">
+            <div class="card border-line2">
+                <div class="title">💚 聖水站 / 首爾林站</div>
+                <div class="content">首爾潮流前線！由老舊工廠與鐵工廠改建的個性選品店、文青咖啡廳街。旁邊的首爾林更是秋天賞楓與銀杏的絕美秘境。</div>
+                <div class="tag-container"><div class="tag">聖水洞</div><div class="tag highlight">楓葉季</div></div>
+            </div>
+            <div class="card border-line2">
+                <div class="title">💚 弘大入口站 / 延南洞</div>
+                <div class="content">充滿年輕活力的街區！延南洞巷弄內藏有非常多獨立書店、古著選品店、漫畫風網美咖啡廳。京義線森林公園也非常適合下午散步。</div>
+                <div class="tag-container"><div class="tag">逛街</div><div class="tag">咖啡廳</div></div>
+            </div>
+            <div class="card border-line2">
+                <div class="title">💚 東大門歷史文化公園站</div>
+                <div class="content">經典地標 DDP 東大門設計廣場，不定期有各式展覽。周邊是著名的服飾批發不夜城與寄放行李的交通樞紐。</div>
+                <div class="tag-container"><div class="tag">地標</div><div class="tag">不夜城</div></div>
+            </div>
+        </div>
+
+        <!-- 子分頁：3 號線內容 -->
+        <div id="line3" class="line-content">
+            <div class="card border-line3">
+                <div class="title">🧡 安國站 (三清洞/北村韓屋村)</div>
+                <div class="content">傳統與現代交織！著名的北村八景韓屋建築群群聚於此，沿路開滿富有質感的傳統茶屋、現代咖啡廳與網美打卡店。</div>
+                <div class="tag-container"><div class="tag">韓屋村</div><div class="tag">傳統文化</div></div>
+            </div>
+            <div class="card border-line3">
+                <div class="title">🧡 景福宮站</div>
+                <div class="content">韓國代表性古宮殿。換上傳統韓服即可「免費入場」參觀，楓葉季時宮殿內部的庭園景色美不勝收。</div>
+                <div class="tag-container"><div class="tag">古宮</div><div class="tag highlight">韓服體驗</div></div>
+            </div>
+            <div class="card border-line3">
+                <div class="title">🧡 新沙站 (新沙洞林蔭道)</div>
+                <div class="content">高質感逛街聖地。街道兩側遍布銀杏樹與歐風露天咖啡廳，聚集許多新興的韓國設計師潮流服飾店與大型旗艦店。</div>
+                <div class="tag-container"><div class="tag">時尚</div><div class="tag">林蔭道</div></div>
+            </div>
+        </div>
+
+        <!-- 子分頁：4 號線內容 -->
+        <div id="line4" class="line-content">
+            <div class="card border-line4">
+                <div class="title">💙 明洞站</div>
+                <div class="content">觀光客掃貨大本營！超大型的 Olive Young 旗艦店與各式美妝店、大創百貨、大使館優質換錢所通通在這一站。</div>
+                <div class="tag-container"><div class="tag highlight">Olive Young</div><div class="tag">換錢</div></div>
+            </div>
+            <div class="card border-line4">
+                <div class="title">💙 忠武路站 / 南山谷韓屋村</div>
+                <div class="content">距離明洞僅一站之遙，有別於北村的大規模，這裡是一處小巧精緻的傳統韓屋庭園，還能遠眺南山首爾塔。</div>
+                <div class="tag-container"><div class="tag">韓屋</div><div class="tag">首爾塔景點</div></div>
+            </div>
+            <div class="card border-line4">
+                <div class="title">💙 惠化站 (大學路)</div>
+                <div class="content">充滿文藝與劇場氣息的大學商圈，附近的小劇場林立，周邊駱山公園的城墎更是俯瞰首爾夜景的知名約會景點。</div>
+                <div class="tag-container"><div class="tag">夜景</div><div class="tag">大學商圈</div></div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- JavaScript 分頁控制 -->
 <script>
+    // 第一層：大分頁切換邏輯 (行李、Day1~4、備註、地鐵)
     function switchDay(dayIdentifier, buttonElement) {
-        // 1. 隱藏所有天數與行李內容區塊
+        // 1. 隱藏所有大分頁內容區塊
         const contents = document.querySelectorAll('.day-content');
         contents.forEach(content => content.classList.remove('active'));
 
-        // 2. 恢復所有按鈕為未選中狀態
-        const buttons = document.querySelectorAll('.tab-btn');
+        // 2. 恢復所有第一層大按鈕為未選中狀態
+        const buttons = document.querySelectorAll('.tab-menu .tab-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
 
-        // 3. 顯示被選中的區塊
+        // 3. 顯示被選中的大區塊
         document.getElementById('day' + dayIdentifier).classList.add('active');
         
         // 4. 將被點擊的按鈕設為 active
         if (buttonElement) {
             buttonElement.classList.add('active');
+        }
+    }
+
+    // 第二層：地鐵分頁內部的小標籤路線切換邏輯
+    function switchLine(lineIdentifier, subButtonElement) {
+        // 1. 隱藏地鐵區塊內的所有路線內容
+        const lineContents = document.querySelectorAll('.line-content');
+        lineContents.forEach(content => content.classList.remove('active'));
+
+        // 2. 恢復所有小標籤按鈕為未選中狀態
+        const subButtons = document.querySelectorAll('.sub-tab-btn');
+        subButtons.forEach(btn => btn.classList.remove('active'));
+
+        // 3. 顯示被選中的地鐵線內容
+        document.getElementById(lineIdentifier).classList.add('active');
+
+        // 4. 點擊小標籤按鈕
+        if (subButtonElement) {
+            subButtonElement.classList.add('active');
         }
     }
 </script>
