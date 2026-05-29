@@ -176,64 +176,83 @@
     
     <!-- 1. 頂部切換按鈕 -->
     <div class="tab-menu">
-        <button class="tab-btn active" onclick="switchDay('pack', this)">🧳<br>行李準備</button>
+        <button class="tab-btn active" onclick="switchDay('pack', this)">行李準備</button>
         <button class="tab-btn" onclick="switchDay(1, this)">Day 1 ·<br>10/27</button>
         <button class="tab-btn" onclick="switchDay(2, this)">Day 2 ·<br>10/28</button>
         <button class="tab-btn" onclick="switchDay(3, this)">Day 3 ·<br>10/29</button>
         <button class="tab-btn" onclick="switchDay(4, this)">Day 4 ·<br>10/30</button>
+        <button class="tab-btn" onclick="switchDay('memo', this)">備註</button>
     </div>
 
     <!-- ==================== 行李準備 ==================== -->
     <div id="daypack" class="day-content active">
         <div class="header">
-            <h1>韓國出發前 · 行李檢查清單 🧳</h1>
+            <h1>韓國出發前 · 行李檢查清單</h1>
             <p>點擊可勾選已準備好的項目，文字會自動產生刪除線。</p>
         </div>
 
         <div class="card border-blue" style="border-left-width: 5px;">
             <!-- 核心證件 -->
             <div class="checklist-section">
-                <div class="checklist-title">📄 重要證件與申辦</div>
+                <div class="checklist-title"> · 重要證件</div>
                 <div class="checklist-grid">
                     <label class="todo-item"><input type="checkbox"><span>護照（效期 6 個月以上）</span></label>
                     <label class="todo-item"><input type="checkbox"><span>身分證、機票登機證</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>網卡 / eSIM（確認憑證）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>K-ETA / Q-CODE 填寫</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>SIM / eSIM（確認憑證）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>e-Arrived Card （前3天填寫電子入境）</span></label>
                 </div>
             </div>
 
             <!-- 金融相關 -->
             <div class="checklist-section">
-                <div class="checklist-title">💳 金融與交通</div>
+                <div class="checklist-title"> · 交通摳摳</div>
                 <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>新台幣（國內交通用）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>韓元現金（換錢用外幣）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>新台幣（2-3萬）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>韓元現金</span></label>
                     <label class="todo-item"><input type="checkbox"><span>海外高回饋信用卡</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>WOWPASS / T-money卡</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>WOWPASS / T-money交通卡</span></label>
                 </div>
             </div>
 
             <!-- 電子產品 -->
             <div class="checklist-section">
-                <div class="checklist-title">🔌 電子產品</div>
+                <div class="checklist-title"> · 電子產品</div>
                 <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>手機與充電線</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>手機</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>充電線</span></label>
                     <label class="todo-item"><input type="checkbox"><span>行動電源（隨身登機）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>韓國轉接頭（4.8mm）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>相機、記憶卡、耳機</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>轉接頭</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>耳機</span></label>
                 </div>
             </div>
 
             <!-- 衣物用品 -->
             <div class="checklist-section">
-                <div class="checklist-title">🧥 衣物與個人用品</div>
+                <div class="checklist-title"> · 個人衣物</div>
                 <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>10 月保暖衣物</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>上衣</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>褲子</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>內衣褲（3套）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>襪子（3雙）</span></label>
                     <label class="todo-item"><input type="checkbox"><span>好走的休閒鞋</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>個人常用藥物</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>保濕保養品（氣候乾燥）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>折疊傘</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>外套（無印鋪棉）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>圍巾</span></label>
                     <label class="todo-item"><input type="checkbox"><span>環保購物袋</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>摺疊傘</span></label>
+                </div>
+            </div>
+
+            <!-- 保養用品 -->
+            <div class="checklist-section">
+                <div class="checklist-title"> · 盥洗/保養用品</div>
+                <div class="checklist-grid">
+                    <label class="todo-item"><input type="checkbox"><span>牙刷/牙膏</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>洗臉巾</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>乾淨毛巾（1-2條）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>護唇膏</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>護手霜</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>乳液</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>眉筆</span></label>
                 </div>
             </div>
         </div>
@@ -249,19 +268,12 @@
         <div class="card border-blue">
             <div class="time">11:20 – 13:30</div>
             <div class="title">✈️ 仁川機場 → 入住乙支路</div>
-            <div class="content">搭 AREX 直達首爾站，換地鐵至東大門站 12 號出口放好行李。先在住宿附近吃個簡單的第一餐。</div>
+            <div class="content">搭 AREX 直達首爾站吃午餐小逛LOTTE超市，再至東大門站 12 號出口寄放行李。</div>
             <div class="tag-container"><div class="tag">交通</div></div>
         </div>
 
-        <div class="card border-green">
-            <div class="time">14:00 – 15:00</div>
-            <div class="title">🛍️ 光化門 Olive Better</div>
-            <div class="content">先搭地鐵到光化門站逛 Olive Better，這間在台灣比較少見，趁早掃貨。</div>
-            <div class="tag-container"><div class="tag">購物</div></div>
-        </div>
-
         <div class="card border-pink">
-            <div class="time">15:00 – 17:30</div>
+            <div class="time">14:00 – 15:00</div>
             <div class="title">💱 明洞大使館換錢 + 掃貨</div>
             <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗館店、Olive Better 補貨、大創一次搞定。</div>
             <div class="tag-container">
@@ -269,6 +281,13 @@
                 <div class="tag highlight">Olive Young</div>
                 <div class="tag">大創</div>
             </div>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">15:00 – 17:30</div>
+            <div class="title">🛍️ 光化門站 Olive Better</div>
+            <div class="content">先搭地鐵到光化門站逛 Olive Better，這間在台灣比較沒有，趁早掃貨。</div>
+            <div class="tag-container"><div class="tag">購物</div></div>
         </div>
 
         <div class="card border-green">
