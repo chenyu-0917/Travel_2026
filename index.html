@@ -97,20 +97,28 @@
             padding-bottom: 4px;
         }
 
+        /* 兩組兩組並排的網格佈局 */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 切分成左右均等的兩欄 */
+            gap: 8px 15px; /* 上下間距 8px，左右間距 15px */
+        }
+
         /* Checklist 項目樣式 */
         .todo-item {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px; /* 微調字體大小以利並排顯示 */
             color: #444444;
+            line-height: 1.3;
         }
         .todo-item input[type="checkbox"] {
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
+            flex-shrink: 0; /* 防止勾選框被擠壓變形 */
         }
         /* 當勾選時，文字變淡並加上刪除線 */
         .todo-item input[type="checkbox"]:checked + span {
@@ -166,6 +174,7 @@
 
 <div class="container">
     
+    <!-- 1. 頂部切換按鈕 -->
     <div class="tab-menu">
         <button class="tab-btn active" onclick="switchDay('pack', this)">🧳<br>行李準備</button>
         <button class="tab-btn" onclick="switchDay(1, this)">Day 1 ·<br>10/27</button>
@@ -174,6 +183,7 @@
         <button class="tab-btn" onclick="switchDay(4, this)">Day 4 ·<br>10/30</button>
     </div>
 
+    <!-- ==================== 行李準備 ==================== -->
     <div id="daypack" class="day-content active">
         <div class="header">
             <h1>韓國出發前 · 行李檢查清單 🧳</h1>
@@ -181,41 +191,55 @@
         </div>
 
         <div class="card border-blue" style="border-left-width: 5px;">
+            <!-- 核心證件 -->
             <div class="checklist-section">
                 <div class="checklist-title">📄 重要證件與申辦</div>
-                <label class="todo-item"><input type="checkbox"><span>護照（效期 6 個月以上）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>身分證、機票電子憑證</span></label>
-                <label class="todo-item"><input type="checkbox"><span>網卡 / eSIM（確認已收到 QR code 或實體卡）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>韓國電子入境 K-ETA（如需填寫） / Q-CODE 填寫</span></label>
+                <div class="checklist-grid">
+                    <label class="todo-item"><input type="checkbox"><span>護照（效期 6 個月以上）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>身分證、機票登機證</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>網卡 / eSIM（確認憑證）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>K-ETA / Q-CODE 填寫</span></label>
+                </div>
             </div>
 
+            <!-- 金融相關 -->
             <div class="checklist-section">
                 <div class="checklist-title">💳 金融與交通</div>
-                <label class="todo-item"><input type="checkbox"><span>新台幣（國內交通用）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>韓元現金（明洞換錢用的台幣或美金）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>海外高回饋信用卡（確認已開卡、開啟海外刷卡）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>WOWPASS 卡 / T-money 交通卡</span></label>
-            </div>
-        </div>
-        <div class="card border-blue" style="border-left-width: 5px;">
-            <div class="checklist-section">
-                <div class="checklist-title">🔌 電子產品</div>
-                <label class="todo-item"><input type="checkbox"><span>手機、充電線、行動電源（須隨身攜帶登機）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>韓國轉接頭（4.8mm 圓腳插頭） / 變壓器</span></label>
-                <label class="todo-item"><input type="checkbox"><span>相機、記憶卡、耳機</span></label>
+                <div class="checklist-grid">
+                    <label class="todo-item"><input type="checkbox"><span>新台幣（國內交通用）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>韓元現金（換錢用外幣）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>海外高回饋信用卡</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>WOWPASS / T-money卡</span></label>
+                </div>
             </div>
 
+            <!-- 電子產品 -->
+            <div class="checklist-section">
+                <div class="checklist-title">🔌 電子產品</div>
+                <div class="checklist-grid">
+                    <label class="todo-item"><input type="checkbox"><span>手機與充電線</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>行動電源（隨身登機）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>韓國轉接頭（4.8mm）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>相機、記憶卡、耳機</span></label>
+                </div>
+            </div>
+
+            <!-- 衣物用品 -->
             <div class="checklist-section">
                 <div class="checklist-title">🧥 衣物與個人用品</div>
-                <label class="todo-item"><input type="checkbox"><span>10 月下旬保暖衣物（日夜溫差大）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>好走的休閒鞋（首爾地鐵階梯和上坡很多）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>個人常用藥物（感冒、腸胃藥、止痛藥）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>保濕保養品（韓國秋季氣候非常乾燥）</span></label>
-                <label class="todo-item"><input type="checkbox"><span>折疊傘、購物袋</span></label>
+                <div class="checklist-grid">
+                    <label class="todo-item"><input type="checkbox"><span>10 月保暖衣物</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>好走的休閒鞋</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>個人常用藥物</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>保濕保養品（氣候乾燥）</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>折疊傘</span></label>
+                    <label class="todo-item"><input type="checkbox"><span>環保購物袋</span></label>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- ==================== DAY 1 ==================== -->
     <div id="day1" class="day-content">
         <div class="header">
             <h1>抵達首爾 · 明洞掃貨 × 乙支路</h1>
@@ -239,7 +263,7 @@
         <div class="card border-pink">
             <div class="time">15:00 – 17:30</div>
             <div class="title">💱 明洞大使館換錢 + 掃貨</div>
-            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗艦店、Olive Better 補貨、大創一次搞定。</div>
+            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗館店、Olive Better 補貨、大創一次搞定。</div>
             <div class="tag-container">
                 <div class="tag">換錢</div>
                 <div class="tag highlight">Olive Young</div>
@@ -262,6 +286,7 @@
         </div>
     </div>
 
+    <!-- ==================== DAY 2 ==================== -->
     <div id="day2" class="day-content">
         <div class="header">
             <h1>聖水洞 × 首爾林 🍂</h1>
@@ -309,6 +334,7 @@
         </div>
     </div>
 
+    <!-- ==================== DAY 3 ==================== -->
     <div id="day3" class="day-content">
         <div class="header">
             <h1>望遠市場 × 延南洞 🌿</h1>
@@ -376,6 +402,7 @@
         </div>
     </div>
 
+    <!-- ==================== DAY 4 ==================== -->
     <div id="day4" class="day-content">
         <div class="header">
             <h1>返程日 · 起床出發 ✈️</h1>
@@ -406,20 +433,21 @@
 
 </div>
 
+<!-- JavaScript 分頁控制 -->
 <script>
     function switchDay(dayIdentifier, buttonElement) {
         // 1. 隱藏所有天數與行李內容區塊
         const contents = document.querySelectorAll('.day-content');
         contents.forEach(content => content.classList.remove('active'));
 
-        // 2. 恢復所有按鈕為未選中狀態（深灰字/淺灰底）
+        // 2. 恢復所有按鈕為未選中狀態
         const buttons = document.querySelectorAll('.tab-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
 
         // 3. 顯示被選中的區塊
         document.getElementById('day' + dayIdentifier).classList.add('active');
         
-        // 4. 將被點擊的按鈕設為 active (深色底/白字)
+        // 4. 將被點擊的按鈕設為 active
         if (buttonElement) {
             buttonElement.classList.add('active');
         }
