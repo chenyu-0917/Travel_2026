@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首爾自由行行程表</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #E0E0E0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* 頂部天數切換鈕區域 */
+        .tab-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+        .tab-btn {
+            background-color: #222222;
+            color: #888888;
+            border: 1px solid #444444;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex: 1;
+        }
+        /* 當前選中天數的效果 */
+        .tab-btn.active {
+            background-color: #FFFFFF;
+            color: #000000;
+            border-color: #FFFFFF;
+            font-weight: bold;
+        }
+
+        /* 行程內容天數區塊（預設隱藏） */
+        .day-content {
+            display: none;
+        }
+        /* 啟用中的天數才顯示 */
+        .day-content.active {
+            display: block;
+        }
+
+        /* 標題與簡介 */
+        .header {
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0 0 8px 0;
+            color: #FFFFFF;
+        }
+        .header p {
+            font-size: 14px;
+            color: #AAAAAA;
+            margin: 0;
+        }
+
+        /* 卡片共用樣式 */
+        .card {
+            background-color: #1A1A1A;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border-left: 5px solid #555555;
+        }
+        
+        /* 圓點顏色對應的左側色條 */
+        .border-blue { border-left-color: #3A86FF; }
+        .border-green { border-left-color: #06D6A0; }
+        .border-pink { border-left-color: #FF006E; }
+        .border-orange { border-left-color: #FB5607; }
+
+        .time {
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 6px;
+        }
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFFFFF;
+            margin-bottom: 8px;
+        }
+        .content {
+            font-size: 14px;
+            color: #CCCCCC;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        /* 標籤樣式 */
+        .tag-container {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+        }
+        /* 圖片中特定淡粉色凸顯的標籤 */
+        .tag.highlight {
+            background-color: #FFD1DC;
+            color: #D14760;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- 1. 頂部切換按鈕 (與圖片 image_1d0041.jpg 的天數圓鈕對應) -->
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="switchDay(1)">Day 1 ·<br>10/27</button>
+        <button class="tab-btn" onclick="switchDay(2)">Day 2 ·<br>10/28</button>
+        <button class="tab-btn" onclick="switchDay(3)">Day 3 ·<br>10/29</button>
+        <button class="tab-btn" onclick="switchDay(4)">Day 4 ·<br>10/30</button>
+    </div>
+
+    <!-- ==================== DAY 1 ==================== -->
+    <div id="day1" class="day-content active">
+        <div class="header">
+            <h1>抵達首爾 · 明洞掃貨 × 乙支路</h1>
+            <p>07:50 桃園出發 → 11:20 仁川落地，下午開始活動</p>
+        </div>
+
+        <div class="card border-blue">
+            <div class="time">11:20 – 13:30</div>
+            <div class="title">✈️ 仁川機場 → 入住乙支路</div>
+            <div class="content">搭 AREX 直達首爾站，換地鐵至東大門站 12 號出口放好行李。先在住宿附近吃個簡單的第一餐。</div>
+            <div class="tag-container"><div class="tag">交通</div></div>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">14:00 – 15:00</div>
+            <div class="title">🛍️ 光化門 Olive Better</div>
+            <div class="content">先搭地鐵到光化門站逛 Olive Better，這間在台灣比較少見，趁早掃貨。</div>
+            <div class="tag-container"><div class="tag">購物</div></div>
+        </div>
+
+        <div class="card border-pink">
+            <div class="time">15:00 – 17:30</div>
+            <div class="title">💱 明洞大使館換錢 + 掃貨</div>
+            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的，記得帶護照。換好錢後逛 Olive Young 明洞旗艦店、Olive Better 補貨、大創一次搞定。</div>
+            <div class="tag-container">
+                <div class="tag">換錢</div>
+                <div class="tag highlight">Olive Young</div>
+                <div class="tag">大創</div>
+            </div>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">18:00 – 19:30</div>
+            <div class="title">🚶 乙支路街區漫步</div>
+            <div class="content">回住宿附近，感受乙支路復古工業區的老街氛圍，老鐵工廠旁夾帶著個性小店，傍晚光線特別好拍。</div>
+            <div class="tag-container"><div class="tag">散步</div></div>
+        </div>
+
+        <div class="card border-orange">
+            <div class="time">19:30 – 21:00</div>
+            <div class="title">🍗 住宿附近 BBQ 炸雞</div>
+            <div class="content">第一天輕鬆收尾，住宿附近找一間 BBQ 炸雞，配汽水，累了一天最療癒的選擇。</div>
+            <div class="tag-container"><div class="tag">晚餐</div></div>
+        </div>
+    </div>
+
+    <!-- ==================== DAY 2 ==================== -->
+    <div id="day2" class="day-content">
+        <div class="header">
+            <h1>聖水洞 × 首爾林 🍂</h1>
+            <p>10 月下旬楓葉季，聖水洞一日深度探索</p>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">09:00 – 11:30</div>
+            <div class="title">🌿 首爾林 (서울숲) 晨間散步</div>
+            <div class="content">10 月下旬楓葉正美，免費入場，早上人最少景色最好。從住宿搭地鐵約 10 分鐘。</div>
+            <div class="tag-container">
+                <div class="tag">公園</div>
+                <div class="tag">免費</div>
+            </div>
+        </div>
+
+        <div class="card border-pink">
+            <div class="time">12:00 – 13:30</div>
+            <div class="title">🥞 5TO7 Cafe</div>
+            <div class="content">評分 4.8 的舒芙蕾鬆餅名店，12:00 準時開門，招牌鬆餅會抖動！建議提早到附近等候。</div>
+            <div class="tag-container">
+                <div class="tag">咖啡廳</div>
+                <div class="tag">必吃</div>
+            </div>
+        </div>
+
+        <div class="card border-blue">
+            <div class="time">14:00 – 17:30</div>
+            <div class="title">🛍️ 聖水洞咖啡街 + 手工皮鞋街</div>
+            <div class="content">老工廠改造的選品店與個性咖啡廳，這裡才是首爾潮流真正前線。沿著聖水路慢慢逛，手工皮鞋街每家都是原創設計。</div>
+            <div class="tag-container">
+                <div class="tag">選品店</div>
+                <div class="tag">聖水洞</div>
+            </div>
+        </div>
+
+        <div class="card border-orange">
+            <div class="time">18:30 – 21:00</div>
+            <div class="title">🥩 宿成道 乙支路店 (숙성도)</div>
+            <div class="content">濟州島熟成黑豬木炭烤，評分 4.8，口感跟普通韓國烤肉完全不同層次。走路回住宿超方便。</div>
+            <div class="tag-container">
+                <div class="tag">晚餐</div>
+                <div class="tag">烤肉</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DAY 3 ==================== -->
+    <div id="day3" class="day-content">
+        <div class="header">
+            <h1>望遠市場 × 延南洞 🌿</h1>
+            <p>在地市場早市，接著漫步延南洞咖啡街與選品巷弄</p>
+        </div>
+
+        <div class="card border-pink">
+            <div class="time">08:00 – 09:00</div>
+            <div class="title">☕ CONIS 早餐 (코니스)</div>
+            <div class="content">延南洞評分 5.0 的寶藏小店，8:00 準時開門，自製司康+每天現泡奶茶，店員超親切。週三正常營業 ✅</div>
+            <div class="tag-container">
+                <div class="tag">早餐</div>
+                <div class="tag">延南洞</div>
+            </div>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">09:30 – 11:00</div>
+            <div class="title">🛒 望遠市場 (망원시장)</div>
+            <div class="content">首爾在地感最強的傳統早市，觀光客少、阿珠媽多。辣炒年糕、海鮮煎餅份量大又便宜，平日早上人最少。</div>
+            <div class="tag-container">
+                <div class="tag">市場</div>
+                <div class="tag">小吃</div>
+            </div>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">11:00 – 12:30</div>
+            <div class="title">🌳 京義線森林公園散步</div>
+            <div class="content">沿廢棄鐵道改建的綠廊步行從望遠走向延南洞，10 月楓葉超美，兩側都是獨立咖啡廳，自然過渡到延南洞。</div>
+            <div class="tag-container">
+                <div class="tag">散步</div>
+                <div class="tag">免費</div>
+            </div>
+        </div>
+
+        <div class="card border-pink">
+            <div class="time">12:30 – 14:00</div>
+            <div class="title">☕ Greem Cafe (그림 카페)</div>
+            <div class="content">延南洞最具話題的咖啡廳，整間店設計成漫畫黑白線稿風格，桌椅牆壁全像從漫畫走出來。週三 11:00 開門 ✅</div>
+            <div class="tag-container">
+                <div class="tag">咖啡廳</div>
+                <div class="tag">打卡</div>
+            </div>
+        </div>
+
+        <div class="card border-blue">
+            <div class="time">14:00 – 17:30</div>
+            <div class="title">🛍️ 延南洞巷弄漫步</div>
+            <div class="content">首爾最多元的獨立書店、古著店、韓國設計師選品店都藏在這裡，沒有既定路線，跟著感覺鑽巷子就對了。</div>
+            <div class="tag-container">
+                <div class="tag">選品店</div>
+                <div class="tag">古著</div>
+            </div>
+        </div>
+
+        <div class="card border-orange">
+            <div class="time">18:30 – 21:00</div>
+            <div class="title">🍽️ Hippo Brunchhaus (히포 브런치하우스)</div>
+            <div class="content">評分 4.7，份量超大的早午餐名店，法式吐司和招牌套餐很多人回訪。延南洞完美收尾，21:30 打烊。</div>
+            <div class="tag-container">
+                <div class="tag">晚餐</div>
+                <div class="tag">份量大</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== DAY 4 ==================== -->
+    <div id="day4" class="day-content">
+        <div class="header">
+            <h1>返程日 · 起床出發 ✈️</h1>
+            <p>班機 12:30，最晚 09:30 須出門搭 AREX</p>
+        </div>
+
+        <div class="card border-green">
+            <div class="time">07:30 – 09:00</div>
+            <div class="title">🍳 起床 + 住宿附近吃早餐</div>
+            <div class="content">輕鬆吃個早餐，整理行李，把握最後的首爾晨曦。住宿旁便利商店或小食堂都可以。</div>
+            <div class="tag-container"><div class="tag">早餐</div></div>
+        </div>
+
+        <div class="card border-blue">
+            <div class="time">09:30 出門</div>
+            <div class="title">🚇 搭 AREX 前往仁川機場</div>
+            <div class="content">從首爾站搭 AREX 約 50 分鐘抵達仁川機場，建議 09:30 出門，11:00 前抵達機場辦理登機手續。</div>
+            <div class="tag-container"><div class="tag">交通</div></div>
+        </div>
+
+        <div class="card border-orange">
+            <div class="time">12:30</div>
+            <div class="title">✈️ 仁川 → 桃園，14:20 抵達</div>
+            <div class="content">滿載而歸，帶著滿滿戰利品平安回台灣！</div>
+            <div class="tag-container"><div class="tag">返程</div></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- 控制切換天數的 JavaScript -->
+<script>
+    function switchDay(dayNumber) {
+        // 1. 移除所有天數區塊的 active 狀態（使其隱藏）
+        const contents = document.querySelectorAll('.day-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+        // 2. 移除所有按鈕的 active 樣式（恢復深色）
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // 3. 顯示被點選的那一天，並把點選的按鈕變白
+        document.getElementById('day' + dayNumber).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
