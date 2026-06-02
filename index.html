@@ -107,7 +107,7 @@
         .sub-tab-btn.active.line-4 { background-color: #389ce3; color: white; }
         .sub-tab-btn.active.line-5 { background-color: #9B5094; color: white; }
 
-        /* 全新新增：清單子頁籤選中時的深色風格（完全仿照地鐵） */
+        /* 清單子頁籤選中時的深色風格*/
         .sub-tab-btn.active.list-sub { background-color: #333333; color: white; }
 
         /* 地鐵路線內容區塊 */
@@ -118,13 +118,58 @@
             display: block;
         }
         
-        /* 全新新增：清單子頁籤獨立內容區塊 */
+        /* 清單子頁籤獨立內容區塊 */
         .list-content {
             display: none;
         }
         .list-content.active {
             display: block;
         }
+        /* ==================================================================== */
+
+        /* ===================== 第三層：購物子頁籤專用 CSS ===================== */
+        .olive-tab-menu {
+            display: flex;             
+            gap: 8px;             
+            margin-bottom: 20px;             
+            background-color: #F5F5F5;             
+            padding: 6px;             
+            border-radius: 12px;
+            overflow-x: auto;
+            padding-bottom: 15px; /* 加大間距，防滾動條與按鈕過近 */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 隱藏預設，並強制設定在 iOS / Android 可視化滾動條外觀 */
+        .olive-tab-menu::-webkit-scrollbar {
+            height: 6px;
+            display: block;
+        }
+        .olive-tab-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+        .olive-tab-menu::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        /* iOS 渲染修補 */
+        .olive-tab-menu::after {
+            content: '';
+            padding-right: 1px;
+        }
+
+        /* 第三層子頁籤內容隱藏/顯示控制 */
+        .shop-sub-content {
+            display: none;
+        }
+        .shop-sub-content.active {
+            display: block;
+        }
+
+        /* 第三層選中時的質感深灰配色（與主頁籤呼應） */
+        .sub-tab-btn.active.shop-olive-young { background-color: #333333; color: white; }         
+        .sub-tab-btn.active.shop-olive-better { background-color: #555555; color: white; }
         /* ==================================================================== */
 
         /* 行程內容天數區塊 */
@@ -195,7 +240,7 @@
             gap: 8px 15px; /* 上下間距 8px，左右間距 15px */
         }
 
-        /* 全新新增：一行一個選項的垂直排列容器（不採用 grid 網格） */
+        /* 單欄垂直排列 */
         .list-vertical {
             display: flex;
             flex-direction: column;
@@ -685,14 +730,30 @@
 
         <!-- 購物獨立頁籤 -->
         <div id="list5" class="list-content">
-            <div class="card border-gray">
-                <div class="checklist-section">
-                    <div class="checklist-title"> · 購物</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>Olive Young (明洞旗艦店大掃貨)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>光化門站 Olive Better</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>聖水洞工廠改造選品街</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>延南洞獨立文創/古著選品店</span></label>
+            <div class="sub-tab-menu olive-tab-menu">             
+                <button class="sub-tab-btn active shop-olive-young" onclick="switchShopSubLine('olive-young-content', this)">Olive Young</button>             
+                <button class="sub-tab-btn shop-olive-better" onclick="switchShopSubLine('olive-better-content', this)">Olive Better</button>         
+            </div>
+            <div id="olive-young-content" class="shop-sub-content active">
+                <div class="card border-gray">
+                    <div class="checklist-section">
+                        <div class="checklist-title"> · Olive Young 購物清單</div>
+                        <div class="list-vertical">
+                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="olive-better-content" class="shop-sub-content">
+                <div class="card border-gray">
+                    <div class="checklist-section">
+                        <div class="checklist-title"> · Olive Better 購物清單</div>
+                        <div class="list-vertical">
+                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -900,6 +961,20 @@
         
         document.getElementById(lineId).classList.add('active');
         btn.classList.add('active');
+    }
+    // 控制購物（#list5）內部第三層子頁籤切換的邏輯
+    function switchShopSubLine(contentId, button) {
+        // 1. 隱藏購物區域內的所有子內容
+        const contents = document.querySelectorAll('.shop-sub-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+        // 2. 移除購物按鈕群的所有選取狀態
+        const buttons = button.parentElement.querySelectorAll('.sub-tab-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // 3. 顯示目前點擊的子內容與高亮按鈕
+        document.getElementById(contentId).classList.add('active');
+        button.classList.add('active');
     }
 </script>
 
