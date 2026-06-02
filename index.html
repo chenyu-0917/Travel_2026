@@ -27,24 +27,32 @@
             gap: 10px;
             margin-bottom: 25px;
             overflow-x: auto;
-            padding-bottom: 5px;
+            padding-bottom: 15px;
             width: 100%;
+
+            -webkit-overflow-scrolling: touch;
         }
         /* 頂部天數切換鈕下方的滾動條 */
+        /* Android */
         .tab-menu::-webkit-scrollbar {
-            height: 6px; /* 滾動條的高度（水平滾動） */
+            height: 8px; /* 滾動條的高度（水平滾動） */
+            display: block;
         }
         .tab-menu::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05); /* 滾動條軌道的背景顏色（淡淡的灰色） */
             border-radius: 10px;
         }
         .tab-menu::-webkit-scrollbar-thumb {
-            background: rgba(51, 51, 51, 0.4); /* 滾動條滑塊的顏色（維持您的質感深灰，帶透明度） */
+            background: rgba(0, 0, 0, 0.3); /* 滾動條滑塊的顏色（維持您的質感深灰，帶透明度） */
             border-radius: 10px;
-            transition: background 0.3s ease;
         }
         .tab-menu::-webkit-scrollbar-thumb:hover {
             background: rgba(51, 51, 51, 0.7); /* 滑鼠懸停時滑塊顏色加深 */
+        }
+        /* iPhone */
+        .tab-menu::after {
+            content: '';
+            padding-right: 1px;
         }
         .tab-btn {
             background-color: rgba(255, 255, 255, 0.4);
