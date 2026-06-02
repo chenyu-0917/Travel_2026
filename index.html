@@ -83,11 +83,22 @@
         .sub-tab-btn.active.line-4 { background-color: #389ce3; color: white; }
         .sub-tab-btn.active.line-5 { background-color: #9B5094; color: white; }
 
+        /* 全新新增：清單子頁籤選中時的深色風格（完全仿照地鐵） */
+        .sub-tab-btn.active.list-sub { background-color: #333333; color: white; }
+
         /* 地鐵路線內容區塊 */
         .line-content {
             display: none;
         }
         .line-content.active {
+            display: block;
+        }
+        
+        /* 全新新增：清單子頁籤獨立內容區塊 */
+        .list-content {
+            display: none;
+        }
+        .list-content.active {
             display: block;
         }
         /* ==================================================================== */
@@ -146,6 +157,13 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* 切分成左右均等的兩欄 */
             gap: 8px 15px; /* 上下間距 8px，左右間距 15px */
+        }
+
+        /* 全新新增：一行一個選項的垂直排列容器（不採用 grid 網格） */
+        .list-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* 垂直項目間的間距 */
         }
 
         /* Checklist 項目樣式 */
@@ -227,18 +245,17 @@
 
 <div class="container">
     
-    <!-- 1. 頂部大分頁切換按鈕（第一層） -->
     <div class="tab-menu">
         <button class="tab-btn active" onclick="switchDay('pack', this)">行李準備</button>
         <button class="tab-btn" onclick="switchDay(1, this)">Day 1 ·<br>10/27</button>
         <button class="tab-btn" onclick="switchDay(2, this)">Day 2 ·<br>10/28</button>
         <button class="tab-btn" onclick="switchDay(3, this)">Day 3 ·<br>10/29</button>
         <button class="tab-btn" onclick="switchDay(4, this)">Day 4 ·<br>10/30</button>
+        <button class="tab-btn" onclick="switchDay('list', this)">清單</button>
         <button class="tab-btn" onclick="switchDay('memo', this)">備註</button>
         <button class="tab-btn" onclick="switchDay('traffic', this)">地鐵</button>
     </div>
 
-    <!-- ==================== 行李準備 ==================== -->
     <div id="daypack" class="day-content active">
         <div class="header">
             <h1>🇰🇷 韓國出發前 · 行李檢查清單</h1>
@@ -247,7 +264,6 @@
 
         <div class="card border-gray" style="border-left-width: 5px;">
             <h5>　❌禁止隨身攜帶各式刀具、超過100ml的液體</h5>
-            <!-- 核心證件 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 重要證件</div>
                 <div class="checklist-grid">
@@ -258,7 +274,6 @@
                 </div>
             </div>
 
-            <!-- 金融相關 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 交通摳摳</div>
                 <div class="checklist-grid">
@@ -269,7 +284,6 @@
                 </div>
             </div>
 
-            <!-- 電子產品 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 電子產品</div>
                 <div class="checklist-grid">
@@ -281,7 +295,6 @@
                 </div>
             </div>
 
-            <!-- 衣物用品 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 個人衣物</div>
                 <div class="checklist-grid">
@@ -296,7 +309,6 @@
                 </div>
             </div>
 
-            <!-- 保養用品 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 盥洗用品</div>
                 <div class="checklist-grid">
@@ -311,7 +323,6 @@
                 </div>
             </div>
 
-            <!-- 其他用品 -->
             <div class="checklist-section">
                 <div class="checklist-title"> · 其他用品</div>
                 <div class="checklist-grid">
@@ -326,11 +337,16 @@
         </div>
     </div>
 
-    <!-- ==================== DAY 1 ==================== -->
     <div id="day1" class="day-content">
         <div class="header">
             <h1>抵達首爾 · 明洞掃貨 × 乙支路 🛍️</h1>
             <p>07:50 桃園出發 → 11:20 仁川落地，下午開始活動</p>
+        </div>
+
+        <div class="card border-gray">
+            <div class="time">04:30 - 05:30</div>
+            <div class="title"> 出發到桃園機場1航</div>
+            <div class="content"></div>
         </div>
 
         <div class="card border-blue">
@@ -340,7 +356,7 @@
             <div class="tag-container"><div class="tag">交通</div></div>
         </div>
 
-        <div class="card border-pink">
+        <div class="card border-blue">
             <div class="time">14:00 – 15:00</div>
             <div class="title">💱 明洞大使館換錢 + 掃貨</div>
             <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的。換好錢後逛 Olive Young 明洞旗館店、大創一次搞定。</div>
@@ -380,7 +396,6 @@
         </div>
     </div>
 
-    <!-- ==================== DAY 2 ==================== -->
     <div id="day2" class="day-content">
         <div class="header">
             <h1>聖水洞 × 首爾林 🍂</h1>
@@ -412,8 +427,8 @@
 
         <div class="card border-blue">
             <div class="time">14:00 – 17:30</div>
-            <div class="title">🛍️ 聖水洞咖啡街 + 手工皮鞋街</div>
-            <div class="content">老工廠改造的選品店與個性咖啡廳，這裡才是首爾潮流真正前線。沿著聖水路慢慢逛，手工皮鞋街每家都是原創設計。</div>
+            <div class="title">🛍️ 聖水洞咖啡街</div>
+            <div class="content">老工廠改造的選品店與個性咖啡廳，這裡才是首爾潮流真正前線。</div>
             <div class="tag-container">
                 <div class="tag">選品店</div>
                 <div class="tag">聖水洞</div>
@@ -422,16 +437,14 @@
 
         <div class="card border-orange">
             <div class="time">18:30 – 21:00</div>
-            <div class="title">🥩 宿成道 乙支路店 (숙성도)</div>
+            <div class="title">🥩 </div>
             <div class="content">濟州島熟成黑豬木炭烤，評分 4.8，口感跟普通韓國烤肉完全不同層次。走路回住宿超方便。</div>
             <div class="tag-container">
                 <div class="tag">晚餐</div>
-                <div class="tag">烤肉</div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== DAY 3 ==================== -->
     <div id="day3" class="day-content">
         <div class="header">
             <h1>望遠市場 × 延南洞 🌿</h1>
@@ -440,7 +453,7 @@
 
         <div class="card border-pink">
             <div class="time">08:00 – 09:00</div>
-            <div class="title">☕ CONIS 早餐 (코니스)</div>
+            <div class="title">🔑 CONIS 早餐 (코니스)</div>
             <div class="content">延南洞評分 5.0 的寶藏小店，8:00 準時開門，自製司康+每天現泡奶茶，店員超親切。週三正常營業 ✅</div>
             <div class="tag-container">
                 <div class="tag">早餐</div>
@@ -481,7 +494,7 @@
         <div class="card border-blue">
             <div class="time">14:00 – 17:30</div>
             <div class="title">🛍️ 延南洞巷弄漫步</div>
-            <div class="content">首爾最多元的獨立書店、古著店、韓國設計師選品店都藏在這裡，沒有既定路線，跟著感覺鑽巷子就對了。</div>
+            <div class="content">首爾最多元的獨立書店、古著店、韓國設計師選品店都藏在這裡，沒有既定路線，跟著感覺钻巷子就對了。</div>
             <div class="tag-container">
                 <div class="tag">選品店</div>
                 <div class="tag">古著</div>
@@ -499,7 +512,6 @@
         </div>
     </div>
 
-    <!-- ==================== DAY 4 ==================== -->
     <div id="day4" class="day-content">
         <div class="header">
             <h1>返程日 · 起床出發 ✈️</h1>
@@ -528,21 +540,102 @@
         </div>
     </div>
 
-    <!-- ==================== 備註 ==================== -->
+    <div id="daylist" class="day-content">
+        <div class="header">
+            <h1>📝 旅程待辦與購物清單</h1>
+            <p>點擊下方小標籤，切換清單項目！</p>
+        </div>
+
+        <div class="sub-tab-menu">
+            <button class="sub-tab-btn active list-sub" onclick="switchList('list1', this)">全部</button>
+            <button class="sub-tab-btn list-sub" onclick="switchList('list2', this)">景點</button>
+            <button class="sub-tab-btn list-sub" onclick="switchList('list3', this)">美食</button>
+            <button class="sub-tab-btn list-sub" onclick="switchList('list4', this)">咖啡廳</button>
+            <button class="sub-tab-btn list-sub" onclick="switchList('list5', this)">購物</button>
+        </div>
+
+        <div id="list1" class="list-content active">
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 全部</div>
+                    <div class="list-vertical">
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="list2" class="list-content">
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 景點</div>
+                    <div class="list-vertical">
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="list3" class="list-content">
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 美食</div>
+                    <div class="list-vertical">
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="list4" class="list-content">
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 咖啡廳</div>
+                    <div class="list-vertical">
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="list5" class="list-content">
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 購物</div>
+                    <div class="list-vertical">
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                        <label class="todo-item"><input type="checkbox"><span></span></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="daymemo" class="day-content">
         <div class="header">
             <h1> ✨ 注意事項 ✨ </h1>
         </div>
         <div class="card border-gray">
             <div class="title"> SES 自動通關</div>
-            <div class="content">　時間：09:00～18:00（中午12:00～13:00休息）
-            </div><div class="content">　地點：B2「機場快線AREX」的搭乘入口旁邊</div>
+            <div class="content">　時間：09:00～18:00（中午12:00～13:00休息）</div>
+            <div class="content">　地點：首爾站B2「機場快線AREX」的搭乘入口旁邊</div>
+            <div class="content"><br>　時間：24小時</div>
+            <div class="content">　地點：仁川機場2航入境前A區</div>
             <div class="tag-container"><div class="tag">SES</div></div>
         </div>
         <div class="card border-gray">
             <div class="title"> 必裝 APP</div>
             <div class="content">　NAVER Map（地圖）</div>
-            <div class="content">　SMARTPASS（快速通關）</div>
+            <div class="content">　SMARTPASS（快速出境）</div>
             <div class="content">　CATCH TABLE（餐廳訂位）</div>
             <div class="tag-container"><div class="tag">APP</div></div>
         </div>
@@ -555,14 +648,12 @@
         </div>
     </div>
 
-    <!-- ==================== 地鐵 ==================== -->
     <div id="daytraffic" class="day-content">
         <div class="header">
             <h1>🚇 首爾地鐵沿線景點懶人包</h1>
             <p>點擊下方地鐵線小標籤，可以快速切換各路線的核心觀光站點與特別景點！</p>
         </div>
 
-        <!-- 第二層：小標籤切換鈕 -->
         <div class="sub-tab-menu">
             <button class="sub-tab-btn active line-1" onclick="switchLine('line1', this)">1號線</button>
             <button class="sub-tab-btn line-2" onclick="switchLine('line2', this)">2號線</button>
@@ -571,7 +662,6 @@
             <button class="sub-tab-btn line-5" onclick="switchLine('line5', this)">5號線</button>
         </div>
 
-        <!-- 子分頁：1 號線內容 -->
         <div id="line1" class="line-content active">
             <div class="card border-line1">
                 <div class="title">💙 首爾站</div>
@@ -595,7 +685,6 @@
             </div>
         </div>
 
-        <!-- 子分頁：2 號線內容 -->
         <div id="line2" class="line-content">
             <div class="card border-line2">
                 <div class="title">💚 聖水站 / 首爾林站</div>
@@ -624,7 +713,6 @@
             </div>
         </div>
 
-        <!-- 子分頁：3 號線內容 -->
         <div id="line3" class="line-content">
             <div class="card border-line3">
                 <div class="title">🧡 安國站 (三清洞/北村韓屋村)</div>
@@ -653,7 +741,6 @@
             </div>
         </div>
 
-        <!-- 子分頁：4 號線內容 -->
         <div id="line4" class="line-content">
             <div class="card border-line4">
                 <div class="title">💙 明洞站</div>
@@ -672,8 +759,7 @@
             </div>
         </div>
 
-        <!-- 子分頁：5 號線內容 -->
-         <div id="line5" class="line-content">
+        <div id="line5" class="line-content">
             <div class="card border-line5">
                 <div class="title">💜 汝矣島站 / 汝矣渡口站</div>
                 <div class="content">汝矣島公園、IFC Mall、63大廈</div>
@@ -693,9 +779,8 @@
     </div>
 </div>
 
-<!-- JavaScript 分頁控制 -->
 <script>
-    // 第一層：大分頁切換邏輯 (行李、Day1~4、備註、地鐵)
+    // 第一層：大分頁切換邏輯 (行李、Day1~4、備註、地鐵、清單)
     function switchDay(dayIdentifier, buttonElement) {
         // 1. 隱藏所有大分頁內容區塊
         const contents = document.querySelectorAll('.day-content');
@@ -720,12 +805,31 @@
         const lineContents = document.querySelectorAll('.line-content');
         lineContents.forEach(content => content.classList.remove('active'));
 
-        // 2. 恢復所有小標籤按鈕為未選中狀態
-        const subButtons = document.querySelectorAll('.sub-tab-btn');
+        // 2. 恢復地鐵選單內所有按鈕為未選中狀態
+        const subButtons = subButtonElement.parentElement.querySelectorAll('.sub-tab-btn');
         subButtons.forEach(btn => btn.classList.remove('active'));
 
         // 3. 顯示被選中的地鐵線內容
         document.getElementById(lineIdentifier).classList.add('active');
+
+        // 4. 點擊小標籤按鈕
+        if (subButtonElement) {
+            subButtonElement.classList.add('active');
+        }
+    }
+
+    // 全新新增：第二層「清單」內部的子頁籤切換邏輯（與地鐵完全分離，互不干擾）
+    function switchList(listIdentifier, subButtonElement) {
+        // 1. 隱藏清單區塊內的所有項目內容
+        const listContents = document.querySelectorAll('.list-content');
+        listContents.forEach(content => content.classList.remove('active'));
+
+        // 2. 恢復清單選單內所有按鈕為未選中狀態
+        const subButtons = subButtonElement.parentElement.querySelectorAll('.sub-tab-btn');
+        subButtons.forEach(btn => btn.classList.remove('active'));
+
+        // 3. 顯示被選中的清單內容
+        document.getElementById(listIdentifier).classList.add('active');
 
         // 4. 點擊小標籤按鈕
         if (subButtonElement) {
