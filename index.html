@@ -30,6 +30,22 @@
             padding-bottom: 5px;
             width: 100%;
         }
+        /* 頂部天數切換鈕下方的滾動條 */
+        .tab-menu::-webkit-scrollbar {
+            height: 6px; /* 滾動條的高度（水平滾動） */
+        }
+        .tab-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05); /* 滾動條軌道的背景顏色（淡淡的灰色） */
+            border-radius: 10px;
+        }
+        .tab-menu::-webkit-scrollbar-thumb {
+            background: rgba(51, 51, 51, 0.4); /* 滾動條滑塊的顏色（維持您的質感深灰，帶透明度） */
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+        .tab-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(51, 51, 51, 0.7); /* 滑鼠懸停時滑塊顏色加深 */
+        }
         .tab-btn {
             background-color: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(5px);
@@ -786,6 +802,16 @@
                 <div class="content">高質感逛街聖地。街道兩側遍布銀杏樹與歐風露天咖啡廳，聚集許多新興的韓國設計師潮流服飾店與大型旗艦店。</div>
                 <div class="tag-container"><div class="tag">時尚</div><div class="tag">林蔭道</div></div>
             </div>
+            <div class="card border-line3">
+                <div class="title">🧡 狎鷗亭</div>
+                <div class="content"></div>
+                <div class="tag-container"><div class="tag"></div><div class="tag"></div></div>
+            </div>
+            <div class="card border-line3">
+                <div class="title">🧡 高速巴士客運站</div>
+                <div class="content">高速巴士地下街</div>
+                <div class="tag-container"><div class="tag"></div><div class="tag"></div></div>
+            </div>
         </div>
 
         <div id="line4" class="line-content">
@@ -817,12 +843,17 @@
                 <div class="content">Olive Better、光化門</div>
                 <div class="tag-container"></div>
             </div>
+            <div class="card border-line5">
+                <div class="title">💜 鐘路3街站</div>
+                <div class="content">近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。</div>
+                <div class="tag-container"><div class="tag">益善洞</div></div>
+            </div>
         </div>
     </div>
 
 </div>
 
-<!-- 控制切換核心邏輯 JavaScript Script -->
+<!-- JavaScript 控制分頁切換核心邏輯 -->
 <script>
     // 頂部大分頁切換 (行李準備, Day1~4, 清單, 備註, 地鐵)
     function switchDay(dayId, btn) {
