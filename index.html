@@ -675,22 +675,22 @@
                 <!-- 購物區塊 -->
                 <div class="checklist-section divider">
                     <div class="checklist-title"> · 購物</div>
-                    <div class="sub-tab-menu olive-tab-menu sync-tab-menu">             
-                        <button class="sub-tab-btn active shop-olive-young btn-young" onclick="switchShopSubLine('olive-young', this)">Olive Young</button>             
-                        <button class="sub-tab-btn shop-olive-better btn-better" onclick="switchShopSubLine('olive-better', this)">Olive Better</button>         
+                    <div class="sub-tab-menu olive-tab-menu">             
+                        <button class="sub-tab-btn active shop-olive-young btn-young" data-target="olive-young" onclick="switchShopSubLine(this)">Olive Young</button>             
+                        <button class="sub-tab-btn shop-olive-better btn-better" data-target="olive-better" onclick="switchShopSubLine(this)">Olive Better</button>         
                     </div>
-
+                
                     <div class="shop-sub-content olive-young-content active">
                         <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                            <label class="todo-item"><input type="checkbox"><span>Olive Young (明洞旗艦店大掃貨)</span></label>
+                            <label class="todo-item"><input type="checkbox"><span>聖水洞工廠改造選品街</span></label>
+                            <label class="todo-item"><input type="checkbox"><span>延南洞獨立文創/古著選品店</span></label>
                         </div>
                     </div>
-
+                
                     <div class="shop-sub-content olive-better-content">
                         <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                            <label class="todo-item"><input type="checkbox"><span>光化門站 Olive Better</span></label>
                         </div>
                     </div>
                 </div>
@@ -742,29 +742,26 @@
 
         <!-- 購物獨立頁籤 -->
         <div id="list5" class="list-content">
-            <div class="sub-tab-menu olive-tab-menu">             
-                <button class="sub-tab-btn active shop-olive-young" onclick="switchShopSubLine('olive-young-content', this)">Olive Young</button>             
-                <button class="sub-tab-btn shop-olive-better" onclick="switchShopSubLine('olive-better-content', this)">Olive Better</button>         
-            </div>
-            <div id="olive-young-content" class="shop-sub-content active">
-                <div class="card border-gray">
-                    <div class="checklist-section">
-                        <div class="checklist-title"> · Olive Young 購物清單</div>
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="card border-gray">
+                <div class="checklist-section">
+                    <div class="checklist-title"> · 購物</div>
+                    
+                    <div class="sub-tab-menu olive-tab-menu">             
+                        <button class="sub-tab-btn active shop-olive-young btn-young" data-target="olive-young" onclick="switchShopSubLine(this)">Olive Young</button>             
+                        <button class="sub-tab-btn shop-olive-better btn-better" data-target="olive-better" onclick="switchShopSubLine(this)">Olive Better</button>         
+                    </div>      
 
-            <div id="olive-better-content" class="shop-sub-content">
-                <div class="card border-gray">
-                    <div class="checklist-section">
-                        <div class="checklist-title"> · Olive Better 購物清單</div>
+                    <div class="shop-sub-content olive-young-content active">
                         <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span></span></label>
+                            <label class="todo-item"><input type="checkbox"><span>Olive Young (明洞旗艦店大掃貨)</span></label>
+                            <label class="todo-item"><input type="checkbox"><span>聖水洞工廠改造選品街</span></label>
+                            <label class="todo-item"><input type="checkbox"><span>延南洞獨立文創/古著選品店</span></label>
+                        </div>
+                    </div>      
+
+                    <div class="shop-sub-content olive-better-content">
+                        <div class="list-vertical">
+                            <label class="todo-item"><input type="checkbox"><span>光化門站 Olive Better</span></label>
                         </div>
                     </div>
                 </div>
@@ -974,19 +971,37 @@
         document.getElementById(lineId).classList.add('active');
         btn.classList.add('active');
     }
+
     // 控制購物（#list5）內部第三層子頁籤切換的邏輯
-    function switchShopSubLine(contentId, button) {
-        // 1. 隱藏購物區域內的所有子內容
-        const contents = document.querySelectorAll('.shop-sub-content');
-        contents.forEach(content => content.classList.remove('active'));
-
-        // 2. 移除購物按鈕群的所有選取狀態
-        const buttons = button.parentElement.querySelectorAll('.sub-tab-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-
-        // 3. 顯示目前點擊的子內容與高亮按鈕
-        document.getElementById(contentId).classList.add('active');
-        button.classList.add('active');
+    function switchShopSubLine(clickedButton) {
+        // 1. 獲取當前點擊的目標類型 (olive-young 或 olive-better)
+        const targetType = clickedButton.getAttribute('data-target');
+        
+        // 2. 找出全網頁中，所有包含這個購物頁籤的父層區塊（即 list1 和 list5）
+        const allLists = document.querySelectorAll('.list-content');
+        
+        allLists.forEach(listContainer => {
+            // 3. 在每個容器內部，尋找對應的按鈕群並切換 active
+            const youngBtn = listContainer.querySelector('.btn-young');
+            const betterBtn = listContainer.querySelector('.btn-better');
+            
+            // 4. 在每個容器內部，尋找對應的內容區塊
+            const youngContent = listContainer.querySelector('.olive-young-content');
+            const betterContent = listContainer.querySelector('.olive-better-content');
+            
+            // 5. 根據點擊的類型，進行精確的顯示/隱藏與按鈕高亮
+            if (targetType === 'olive-young') {
+                if (youngBtn) youngBtn.classList.add('active');
+                if (betterBtn) betterBtn.classList.remove('active');
+                if (youngContent) youngContent.classList.add('active');
+                if (betterContent) betterContent.classList.remove('active');
+            } else if (targetType === 'olive-better') {
+                if (youngBtn) youngBtn.classList.remove('active');
+                if (betterBtn) betterBtn.classList.add('active');
+                if (youngContent) youngContent.classList.remove('active');
+                if (betterContent) betterContent.classList.add('active');
+            }
+        });
     }
 </script>
 
