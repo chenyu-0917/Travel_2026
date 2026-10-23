@@ -362,6 +362,11 @@
           font-size: 11.5px;
         }
       }
+          #days.single section.day {
+        margin-top: 20px;
+        padding-top: 0;
+        border-top: none;
+      }
     </style>
   </head>
   <body>
@@ -572,7 +577,7 @@
           ],
         ],
         [
-          "交通",
+          "交通摳摳",
           ["新台幣（2-3萬）", "韓元現金", "海外高回饋信用卡", "WOWPASS / T-money交通卡"],
         ],
         ["電子產品", ["手機", "耳機", "充電線", "轉接頭", "行動電源（隨身登機清楚的 Wh 標示）"]],
@@ -895,6 +900,7 @@
           for (const k in panels)
             panels[k].style.display = k === v ? (k === "pack" ? "grid" : "block") : "none";
           $("days").style.display = isPanel ? "none" : "";
+          $("days").classList.toggle("single", !isPanel && v !== "all");
           if (isPanel) Object.keys(D).forEach((k) => ($("day-" + k).style.display = ""));
           mapEl.style.display = note.style.display = isPanel ? "none" : "block";
           if (isPanel) return;
