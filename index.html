@@ -1,1036 +1,918 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>首爾自由行行程表</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
+    />
     <style>
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-            background-attachment: fixed; /* 讓背景固定，滾動時玻璃折射感 */
-            color: #333333;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            max-width: 600px;
-            width: 100%;
-        }
-
-        /* 頂部天數切換鈕區域 */
-        .tab-menu {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            width: 100%;
-
-            -webkit-overflow-scrolling: touch;
-        }
-        /* 頂部天數切換鈕下方的滾動條 */
-        /* Android */
-        .tab-menu::-webkit-scrollbar {
-            height: 8px; /* 滾動條的高度（水平滾動） */
-            display: block;
-        }
-        .tab-menu::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05); /* 滾動條軌道的背景顏色（淡淡的灰色） */
-            border-radius: 10px;
-        }
-        .tab-menu::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.3); /* 滾動條滑塊的顏色（維持您的質感深灰，帶透明度） */
-            border-radius: 10px;
-        }
-        .tab-menu::-webkit-scrollbar-thumb:hover {
-            background: rgba(51, 51, 51, 0.7); /* 滑鼠懸停時滑塊顏色加深 */
-        }
-        /* iPhone */
-        .tab-menu::after {
-            content: '';
-            padding-right: 1px;
-        }
-        .tab-btn {
-            background-color: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            color: #555555;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 10px 15px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            white-space: nowrap;
-            transition: all 0.3s ease;
-            text-align: center;
-            flex: 1;
-        }
-
-        /* 當按鈕 Active，加深並維持質感 */
-        .tab-btn.active {
-            background-color: rgba(51, 51, 51, 0.9);
-            color: #FFFFFF;
-            border-color: #333333;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* ==================== 第二層：地鐵路線小標籤樣式 ==================== */
-        .sub-tab-menu {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            background-color: #F5F5F5;
-            padding: 6px;
-            border-radius: 12px;
-        }
-        .sub-tab-btn {
-            background-color: transparent;
-            color: #666666;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            flex: 1;
-            transition: all 0.2s ease;
-        }
-        /* 各條地鐵線選中時的官方代表色 */
-        .sub-tab-btn.active.line-1 { background-color: #0d3692; color: white; }
-        .sub-tab-btn.active.line-2 { background-color: #37b44a; color: white; }
-        .sub-tab-btn.active.line-3 { background-color: #fa5f2c; color: white; }
-        .sub-tab-btn.active.line-4 { background-color: #389ce3; color: white; }
-        .sub-tab-btn.active.line-5 { background-color: #9B5094; color: white; }
-
-        /* 清單子頁籤選中時的配色*/
-        .sub-tab-btn.active.list-sub { background-color: #333333; color: white; }
-
-        /* 地鐵路線內容區塊 */
-        .line-content {
-            display: none;
-        }
-        .line-content.active {
-            display: block;
-        }
-        
-        /* 清單子頁籤獨立內容區塊 */
-        .list-content {
-            display: none;
-        }
-        .list-content.active {
-            display: block;
-        }
-        /* ==================================================================== */
-
-        /* ===================== 第三層：購物子頁籤專用 CSS ===================== */
-        .olive-tab-menu {
-            display: flex;             
-            gap: 8px;             
-            margin-bottom: 20px;             
-            background-color: #F5F5F5;             
-            padding: 6px;             
-            border-radius: 12px;
-            overflow-x: auto;
-            padding-bottom: 15px; /* 加大間距，防滾動條與按鈕過近 */
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* 隱藏預設，並強制設定在 iOS / Android 可視化滾動條外觀 */
-        .olive-tab-menu::-webkit-scrollbar {
-            height: 6px;
-            display: block;
-        }
-        .olive-tab-menu::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.03);
-            border-radius: 10px;
-        }
-        .olive-tab-menu::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        /* iOS 渲染修補 */
-        .olive-tab-menu::after {
-            content: '';
-            padding-right: 1px;
-        }
-
-        /* 第三層子頁籤內容隱藏/顯示控制 */
-        .shop-sub-content {
-            display: none;
-        }
-        .shop-sub-content.active {
-            display: block;
-        }
-
-        /* 第三層選中時的配色（與主頁籤呼應） */
-        .sub-tab-btn.active.shop-olive-young { background-color: #C5BAAF; color: white; }         
-        .sub-tab-btn.active.shop-olive-better { background-color: #C5BAAF; color: white; }
-        .sub-tab-btn.active.shop-daiso { background-color: #C5BAAF; color: white;}
-        /* ==================================================================== */
-
-        /* 行程內容天數區塊 */
-        .day-content {
-            display: none;
-        }
-        .day-content.active {
-            display: block;
-        }
-
-        /* 標題與簡介 */
-        .header {
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin: 0 0 8px 0;
-            color: #111111;
-        }
-        .header p {
-            font-size: 14px;
-            color: #666666;
-            margin: 0;
-        }
-
-        /* 卡片共用樣式 */
-        .card {
-            background-color: rgba(255, 255, 255, 0.45); /* 半透明白色底 */
-            backdrop-filter: blur(10px);        /* 背景模糊效果 */
-            -webkit-backdrop-filter: blur(10px); /* 確保 Safari 瀏覽器相容 */
-            border: 1px solid rgba(255, 255, 255, 0.6); /* 亮白的玻璃邊緣線 */
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-            border-left: 6px solid #555555; 
-        }
-        
-        /* 行李清單專用的大區塊樣式 */
-        .checklist-section {
-            margin-bottom: 20px;
-        }
-        /* ＂全部＂清單專用的直線切割分界樣式 */
-        .checklist-section.divider {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-        .checklist-section.divider:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-
-        .checklist-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #111111;
-            margin: 15px 0 8px 0;
-            border-bottom: 2px solid #EEEEEE;
-            padding-bottom: 4px;
-        }
-
-        /* 兩組兩組並排的網格佈局 */
+      :root {
+        --ash: #2b2a28;
+        --grass: #5e6b45;
+        --soil: #a6512f;
+        --cream: #f3eee3;
+        --sky: #7e93a0;
+        --gold: #ce9a3d;
+        --line: rgba(43, 42, 40, 0.14);
+        --card: #fbf8f1;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--cream);
+        color: var(--ash);
+        font-family: "Noto Sans TC", sans-serif;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+      }
+      .display {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+      }
+      .map-wrap {
+        max-width: 920px;
+        margin: 28px auto 0;
+        padding: 0 22px;
+      }
+      .map-caption {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .profile-caption {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #847f70;
+      }
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chips button {
+        font-family: inherit;
+        font-size: 12.5px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: #5b5749;
+        cursor: pointer;
+        transition: 0.15s;
+      }
+      .chips button .sw {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+      .chips button.active {
+        color: #fff;
+        border-color: transparent;
+        background: var(--ash);
+      }
+      #map {
+        width: 100%;
+        height: 480px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        box-shadow: 0 1px 3px rgba(43, 42, 40, 0.06);
+      }
+      .leaflet-popup-content-wrapper {
+        border-radius: 6px;
+        font-family: "Noto Sans TC", sans-serif;
+      }
+      .leaflet-popup-content b {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+        font-size: 14px;
+      }
+      .pin {
+        width: 16px;
+        height: 16px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        border: 2px solid #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+      }
+      .map-note {
+        font-size: 12px;
+        color: #847f70;
+        margin: 8px 0 0;
+      }
+      .checklist-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .warn {
+        grid-column: 1/-1;
+        font-size: 13.5px;
+        color: var(--soil);
+        margin: 0;
+      }
+      .checklist-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px 22px 8px;
+      }
+      .checklist-card h4 {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0 0 10px;
+      }
+      .check-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+        border-top: 1px solid var(--line);
+        cursor: pointer;
+      }
+      .check-item input {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        border: 1.5px solid #b9b2a0;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        position: relative;
+        transition: 0.15s;
+      }
+      .check-item input:checked {
+        background: var(--grass);
+        border-color: var(--grass);
+      }
+      .check-item input:checked::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 1px;
+        width: 4px;
+        height: 8px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .check-item span {
+        font-size: 14.5px;
+        color: #3f3d38;
+        line-height: 1.5;
+      }
+      .check-item input:checked ~ span {
+        color: #a39c8c;
+        text-decoration: line-through;
+      }
+      main {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 20px 22px 100px;
+      }
+      section.day {
+        margin-top: 88px;
+        padding-top: 38px;
+        border-top: 1px solid var(--line);
+      }
+      section.day:first-child {
+        margin-top: 48px;
+      }
+      .day-head {
+        display: flex;
+        align-items: baseline;
+        gap: 16px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+      .day-num {
+        font-size: 15px;
+        color: var(--soil);
+        letter-spacing: 0.1em;
+      }
+      .day-title {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .day-date {
+        font-size: 13px;
+        color: #847f70;
+        margin-left: auto;
+      }
+      .day-theme {
+        color: #565349;
+        font-size: 15px;
+        margin: 6px 0 30px;
+      }
+      .stop {
+        display: grid;
+        grid-template-columns: 104px 1fr;
+        gap: 0 18px;
+      }
+      .rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .rail::after {
+        content: "";
+        width: 1px;
+        flex: 1;
+        background: var(--line);
+      }
+      .stop:last-of-type .rail::after {
+        background: transparent;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+      }
+      .time {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+        font-size: 12.5px;
+        color: var(--ash);
+        text-align: center;
+        line-height: 1.4;
+      }
+      .stop-body {
+        padding-bottom: 34px;
+      }
+      .stop-name {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 6px;
+      }
+      .stop-name.second {
+        margin-top: 14px;
+      }
+      .stop-note {
+        font-size: 14px;
+        color: #5b5749;
+        margin: 0;
+      }
+      .tags {
+        margin-top: 8px;
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .tag {
+        font-size: 11px;
+        letter-spacing: 0.05em;
+        padding: 2px 9px;
+        border-radius: 20px;
+        background: rgba(94, 107, 69, 0.15);
+        color: var(--grass);
+      }
+      .tag.hl {
+        background: rgba(166, 81, 47, 0.14);
+        color: var(--soil);
+        font-weight: 600;
+      }
+      .nav-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        margin: 10px 8px 0 0;
+        padding: 5px 12px;
+        font-size: 12px;
+        color: var(--soil);
+        border: 1px solid rgba(166, 81, 47, 0.35);
+        border-radius: 20px;
+        text-decoration: none;
+        background: rgba(166, 81, 47, 0.06);
+        transition: 0.15s;
+      }
+      .nav-btn:hover {
+        background: var(--soil);
+        color: #fff;
+      }
+      .sec-head {
+        margin-top: 20px;
+      }
+      .sub-title {
+        font-family: "Shippori Mincho", "Noto Serif TC", serif;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 18px 0 4px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid var(--line);
+      }
+      .lcard {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--soil);
+        border-radius: 6px;
+        padding: 14px 18px;
+        margin-top: 14px;
+      }
+      .lcard .stop-name {
+        font-size: 16px;
+        margin: 0 0 4px;
+      }
+      footer {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 22px 70px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        color: #847f70;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      @media (max-width: 600px) {
         .checklist-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 切分成左右均等的兩欄 */
-            gap: 8px 15px; /* 上下間距 8px，左右間距 15px */
+          grid-template-columns: 1fr;
         }
-
-        /* 單欄垂直排列 */
-        .list-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 12px; /* 垂直項目間的間距 */
+        .stop {
+          grid-template-columns: 78px 1fr;
         }
-
-        /* Checklist 項目樣式 */
-        .todo-item {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px; /* 微調字體大小以利並排顯示 */
-            color: #444444;
-            line-height: 1.3;
+        .day-date {
+          margin-left: 0;
         }
-        .todo-item input[type="checkbox"] {
-            margin-right: 8px;
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            flex-shrink: 0; /* 防止勾選框被擠壓變形 */
-        }
-        /* 當勾選時，文字變淡並加上刪除線 */
-        .todo-item input[type="checkbox"]:checked + span {
-            color: #A0A0A0;
-            text-decoration: line-through;
-        }
-        
-        /* 圓點顏色對應的左側色條 */
-        .border-blue { border-left-color: #3A86FF; }
-        .border-green { border-left-color: #06D6A0; }
-        .border-pink { border-left-color: #FF006E; }
-        .border-orange { border-left-color: #FB5607; }
-        .border-purple { border-left-color: #9B5094; }
-        .border-gray { border-left-color: #E2E4F6; }
-
-        /* 地鐵線專用邊框色（對應韓國官方線路顏色） */
-        .border-line1 { border-left-color: #0d3692; }
-        .border-line2 { border-left-color: #37b44a; }
-        .border-line3 { border-left-color: #fa5f2c; }
-        .border-line4 { border-left-color: #389ce3; }
-        .border-line5 { border-left-color: #9B5094; }
-
         .time {
-            font-size: 13px;
-            color: #888888;
-            margin-bottom: 6px;
+          font-size: 11.5px;
         }
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #111111;
-            margin-bottom: 8px;
-        }
-        .content {
-            font-size: 14px;
-            color: #555555;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-
-        /* 標籤樣式 */
-        .tag-container {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .tag {
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 12px;
-            background-color: #EAEAEA;
-            color: #333333;
-        }
-        .tag.highlight {
-            background-color: #FFD1DC;
-            color: #D14760;
-            font-weight: bold;
-        }
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    
-    <div class="tab-menu">
-        <button class="tab-btn active" onclick="switchDay('pack', this)">行李準備</button>
-        <button class="tab-btn" onclick="switchDay(1, this)">Day 1 ·<br>10/27</button>
-        <button class="tab-btn" onclick="switchDay(2, this)">Day 2 ·<br>10/28</button>
-        <button class="tab-btn" onclick="switchDay(3, this)">Day 3 ·<br>10/29</button>
-        <button class="tab-btn" onclick="switchDay(4, this)">Day 4 ·<br>10/30</button>
-        <button class="tab-btn" onclick="switchDay('list', this)">清單</button>
-        <button class="tab-btn" onclick="switchDay('memo', this)">備註</button>
-        <button class="tab-btn" onclick="switchDay('traffic', this)">地鐵</button>
+  </head>
+  <body>
+    <div class="map-wrap">
+      <div class="map-caption">
+        <div class="profile-caption">Route &amp; Prep — 路線與準備</div>
+        <div class="chips" id="filters"></div>
+      </div>
+      <div id="map"></div>
+      <p class="map-note" id="mapnote">
+        地圖標記為大致位置，請以「導航」按鈕（Google Maps 搜尋）為準。
+      </p>
+      <div class="checklist-grid" id="pack" style="display: none"></div>
     </div>
+    <main id="main"></main>
+    <footer><span>首爾自由行・10.27 – 10.30</span><span>桃園 ⇄ 仁川</span></footer>
 
-    <!-- ==================== 行李準備 ==================== -->
-    <div id="daypack" class="day-content active">
-        <div class="header">
-            <h1>🇰🇷 韓國出發前 · 行李檢查清單</h1>
-            <p>點擊可勾選已準備好的項目，文字會自動產生刪除線。</p>
-        </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+      const C = { 1: "#A6512F", 2: "#5E6B45", 3: "#7E93A0", 4: "#CE9A3D" };
+      // p: [顯示名, lat, lng, Google Maps 搜尋字串]
+      const INC = ["仁川機場", 37.4602, 126.4407, "Incheon International Airport"];
+      const D = {
+        1: {
+          n: "DAY 01",
+          d: "10 月 27 日",
+          t: "抵達首爾 · 明洞掃貨 × 乙支路 🛍️",
+          s: "07:50 桃園出發 → 11:20 仁川落地，下午開始活動",
+          st: [
+            { t: "04:30 - 05:30", n: "出發到桃園機場1航" },
+            {
+              t: "11:20 – 13:30",
+              n: "✈️ 仁川機場 → 入住乙支路",
+              c: "搭 AREX 直達首爾站吃午餐小逛LOTTE超市，再至東大門站 12 號出口寄放行李。",
+              tg: ["交通"],
+              p: [
+                INC,
+                ["首爾站 / LOTTE 超市", 37.5547, 126.9707, "Seoul Station Lotte Mart"],
+                ["東大門站 12 號出口", 37.5711, 127.0095, "Dongdaemun Station Exit 12"],
+              ],
+            },
+            {
+              t: "14:00 – 15:00",
+              n: "💱 明洞大使館換錢 + 掃貨",
+              c: "中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的。換好錢後逛 Olive Young 明洞旗館店、大創一次搞定。",
+              tg: ["換錢", "大創"],
+              hl: ["Olive Young", "記得帶護照"],
+              p: [
+                [
+                  "明洞（換錢 / Olive Young / 大創）",
+                  37.5634,
+                  126.984,
+                  "Olive Young Myeongdong Flagship",
+                ],
+              ],
+            },
+            {
+              t: "15:00 – 17:30",
+              n: "🛍️ 光化門站 Olive Better",
+              c: "先搭地鐵到光化門站逛 Olive Better，這間在台灣比較沒有，趁早掃貨。",
+              tg: ["Olive Better"],
+              p: [["Olive Better 光化門", 37.5712, 126.9769, "Olive Better Gwanghwamun"]],
+            },
+            {
+              t: "18:00 – 19:30",
+              n: "🚶 乙支路街區漫步",
+              c: "回住宿附近，感受乙支路復古工業區的老街氛圍，老鐵工廠旁夾帶著個性小店，傍晚光線特別好拍。",
+              tg: ["散步"],
+              p: [["乙支路街區", 37.5663, 126.9915, "Euljiro 3-ga Station"]],
+            },
+            {
+              t: "19:30 – 21:00",
+              n: "🍗 住宿附近 BBQ 炸雞",
+              c: "第一天輕鬆收尾，住宿附近找一間 BBQ 炸雞，配汽水，累了一天最療癒的選擇。",
+              tg: ["晚餐"],
+            },
+          ],
+        },
+        2: {
+          n: "DAY 02",
+          d: "10 月 28 日",
+          t: "聖水洞 × 首爾林 🍂",
+          s: "10 月下旬楓葉季，聖水洞一日深度探索",
+          st: [
+            {
+              t: "09:00 – 11:30",
+              n: "🌿 首爾林 (서울숲) 晨間散步",
+              c: "10 月下旬楓葉正美，免費入場，早上人最少景色最好。從住宿搭地鐵約 10 分鐘。",
+              tg: ["公園", "免費"],
+              p: [["首爾林", 37.5446, 127.0374, "Seoul Forest"]],
+            },
+            {
+              t: "12:00 – 13:30",
+              n: "🍽️ 조조칼국수",
+              c: "蛤蠣刀削麵、海鮮煎餅～　分量超大!!",
+              x: {
+                n: "🥞 5TO7 Cafe",
+                c: "評分 4.8 的舒芙蕾鬆餅名店，12:00 準時開門，招牌鬆餅會抖動！建議提早到附近等候。",
+              },
+              tg: ["舒芙蕾", "必吃"],
+              p: [
+                ["조조칼국수", 37.545, 127.05, "조조칼국수 성수"],
+                ["5TO7 Cafe", 37.544, 127.056, "5TO7 Cafe Seongsu"],
+              ],
+            },
+            {
+              t: "14:00 – 17:30",
+              n: "🛍️ 聖水洞咖啡街",
+              c: "老工廠改造的選品店與個性咖啡廳，這裡才是首爾潮流真正前線。",
+              tg: ["選品店", "聖水洞"],
+              p: [["聖水洞咖啡街", 37.5446, 127.0557, "Seongsu-dong Cafe Street"]],
+            },
+            {
+              t: "18:30 – 21:00",
+              n: "🥩",
+              c: "濟州島熟成黑豬木炭烤，評分 4.8，口感跟普通韓國烤肉完全不同層次。走路回住宿超方便。",
+              tg: ["晚餐"],
+            },
+          ],
+        },
+        3: {
+          n: "DAY 03",
+          d: "10 月 29 日",
+          t: "望遠市場 × 延南洞 🌿",
+          s: "在地市場早市，接著漫步延南洞咖啡街與選品巷弄",
+          st: [
+            {
+              t: "08:00 – 09:00",
+              n: "☕ CONIS 早餐 (코니스)",
+              c: "延南洞評分 5.0 的寶藏小店，8:00 準時開門，自製司康+每天現泡奶茶，店員超親切。週三正常營業 ✅",
+              tg: ["早餐", "延南洞"],
+              p: [["CONIS 코니스", 37.5612, 126.9255, "코니스 연남동"]],
+            },
+            {
+              t: "09:30 – 11:00",
+              n: "🛒 望遠市場 (망원시장)",
+              c: "首爾在地感最強的傳統早市，觀光客少、阿珠媽多。辣炒年糕、海鮮煎餅份量大又便宜，平日早上人最少。",
+              tg: ["市場", "小吃"],
+              p: [["望遠市場", 37.5558, 126.9051, "Mangwon Market"]],
+            },
+            {
+              t: "11:00 – 12:30",
+              n: "🌳 京義線森林公園散步",
+              c: "沿廢棄鐵道改建的綠廊步行從望遠走向延南洞，10 月楓葉超美，兩側都是獨立咖啡廳，自然過渡到延南洞。",
+              tg: ["散步", "免費"],
+              p: [["京義線森林公園", 37.562, 126.925, "Gyeongui Line Forest Park Yeonnam"]],
+            },
+            {
+              t: "12:30 – 14:00",
+              n: "☕ Greem Cafe (그림 카페)",
+              c: "延南洞最具話題的咖啡廳，整間店設計成漫畫黑白線稿風格，桌椅牆壁全像從漫畫走出來。週三 11:00 開門 ✅",
+              tg: ["咖啡廳", "打卡"],
+              p: [["Greem Cafe", 37.5628, 126.9245, "그림 카페 연남동"]],
+            },
+            {
+              t: "14:00 – 17:30",
+              n: "🛍️ 延南洞巷弄漫步",
+              c: "首爾最多元的獨立書店、古著店、韓國設計師選品店都藏在這裡，沒有既定路線，跟著感覺钻巷子就對了。",
+              tg: ["選品店", "古著"],
+              p: [["延南洞巷弄", 37.562, 126.927, "Yeonnam-dong Seoul"]],
+            },
+            {
+              t: "18:30 – 21:00",
+              n: "🍽️ Hippo Brunchhaus (히포 브런치하우스)",
+              c: "評分 4.7，份量超大的早午餐名店，法式吐司和招牌套餐很多人回訪。延南洞完美收尾，21:30 打烊。",
+              tg: ["晚餐", "份量大"],
+              p: [["Hippo Brunchhaus", 37.561, 126.924, "히포 브런치하우스 연남"]],
+            },
+          ],
+        },
+        4: {
+          n: "DAY 04",
+          d: "10 月 30 日",
+          t: "返程日 · 起床出發 ✈️",
+          s: "班機 12:30，最晚 08:40 須出門搭機場巴士",
+          st: [
+            {
+              t: "07:00 – 08:20",
+              n: "🍳 起床 + 住宿附近吃早餐",
+              c: "輕鬆吃個早餐，整理行李，把握最後的首爾晨曦。住宿旁便利商店或小食堂都可以。",
+              tg: ["Wageurwageul"],
+              p: [["住宿（乙支路附近）", 37.566, 126.993, "Euljiro 3-ga Station"]],
+            },
+            {
+              t: "08:30 搭車",
+              n: "🚇 搭機場巴士前往仁川機場",
+              c: "從住宿搭機場巴士車程約 60 至 80 分鐘抵達仁川機場，10:00 前抵達機場辦理登機手續。",
+              tg: ["交通"],
+              p: [INC],
+            },
+            {
+              t: "12:30 登機",
+              n: "✈️ 仁川 → 桃園，預計14:20 抵達",
+              c: "滿載而歸，帶著滿滿戰利品平安回台灣！",
+              tg: ["肥家"],
+            },
+          ],
+        },
+      };
+      const PACK = [
+        [
+          "重要證件",
+          [
+            "護照（效期 6 個月以上）",
+            "身分證、機票登機證",
+            "SIM / eSIM（確認憑證）",
+            "e-Arrived Card （前3天填寫電子入境）",
+          ],
+        ],
+        [
+          "交通",
+          ["新台幣（2-3萬）", "韓元現金", "海外高回饋信用卡", "WOWPASS / T-money交通卡"],
+        ],
+        ["電子產品", ["手機", "耳機", "充電線", "轉接頭", "行動電源（隨身登機清楚的 Wh 標示）"]],
+        [
+          "個人衣物",
+          [
+            "上衣",
+            "褲子",
+            "內衣褲（3套）",
+            "襪子（3雙）",
+            "好走的休閒鞋",
+            "外套（無印鋪棉）",
+            "圍巾",
+            "口罩",
+          ],
+        ],
+        [
+          "盥洗用品",
+          [
+            "牙刷/牙膏",
+            "洗臉巾",
+            "乾淨毛巾（1-2條）",
+            "護唇膏",
+            "護手霜",
+            "乳液",
+            "化妝品",
+            "防曬乳",
+          ],
+        ],
+        ["其他用品", ["環保購物袋", "摺疊傘", "水壺", "夾鏈袋", "衛生紙", "濕紙巾"]],
+      ];
+      const SP = ["首爾林 (賞楓、銀杏步道)", "乙支路復古老街散步", "京義線森林公園"],
+        FD = [
+          "조조칼국수 (蛤蠣刀削麵/海鮮煎餅)",
+          "BBQ 炸雞 (住宿附近外帶)",
+          "濟州島熟成黑豬木炭烤肉",
+          "望遠市場小吃 (辣炒年糕)",
+        ],
+        CF = [
+          "5TO7 Cafe (招牌抖動舒芙蕾)",
+          "CONIS 延南洞早餐 (司康+現泡奶茶)",
+          "Greem Cafe (黑白漫畫風格插畫風)",
+        ],
+        SH = [
+          ["Olive Young", ["Olive Young (明洞旗艦店)"]],
+          ["Olive Better", ["Olive Better（光化門）"]],
+          ["Daiso", ["Daiso"]],
+        ];
+      const LISTS = {
+        all: [
+          ["景點", SP],
+          ["美食", FD],
+          ["咖啡廳", CF],
+          ["購物", SH.flatMap((x) => x[1])],
+        ],
+        sp: [["景點", ["首爾林 (賞楓、銀杏步道)", "聖水洞咖啡街", "京義線森林公園", "望遠市場"]]],
+        fd: [
+          [
+            "美食",
+            [
+              "조조칼국수 (蛤蠣刀削麵/海鮮煎餅)",
+              "BBQ 炸雞 (住宿附近)",
+              "鐘路蒜蓉辣雞湯（弘大）",
+              "望遠市場小吃 (辣炒年糕)",
+              "Hansari馬鈴薯排骨湯 (忠武路)",
+            ],
+          ],
+        ],
+        cf: [["咖啡廳", [...CF, "Cafe Onion (聖水早午餐)"]]],
+        sh: SH,
+      };
+      const LTABS = [
+        ["all", "全部"],
+        ["sp", "景點"],
+        ["fd", "美食"],
+        ["cf", "咖啡廳"],
+        ["sh", "購物"],
+      ];
+      const SUB = [
+        [
+          "1號線",
+          "#0d3692",
+          "💙",
+          [
+            [
+              "首爾站",
+              "最重要的交通大樞紐！不論是往返機場的 AREX 直達車，還是市區 KTX 都在這裡匯集。出站即有超大型樂天超市，方便最後大補貨。",
+              ["AREX", "樂天超市"],
+            ],
+            [
+              "鐘路3街站 (益善洞)",
+              "近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。",
+              ["益善洞", "老屋咖啡"],
+            ],
+            ["鐘路5街站", "廣藏市場、清溪川", ["廣藏市場"]],
+            [
+              "東大門",
+              "DDP 設計廣場、Doota Mall、樂天百貨、陳玉華奶奶一隻雞",
+              ["No Brand", "燉雞"],
+            ],
+          ],
+        ],
+        [
+          "2號線",
+          "#37b44a",
+          "💚",
+          [
+            [
+              "聖水站 / 首爾林站",
+              "首爾潮流前線！由老舊工廠與鐵工廠改建的個性選品店、文青咖啡廳街。旁邊的首爾林更是秋天賞楓與銀杏的絕美秘境。",
+              ["聖水洞", "楓葉季"],
+            ],
+            [
+              "弘大入口站 / 延南洞",
+              "充滿年輕活力的街區！延南洞巷弄內藏有非常多獨立書店、古著選品店、漫畫風網美咖啡廳。京義線森林公園也非常適合下午散步。",
+              ["逛街", "咖啡廳"],
+            ],
+            [
+              "東大門歷史文化公園站",
+              "經典地標 DDP 東大門設計廣場，不定期有各式展覽。周邊是著名的服飾批發不夜城與寄放行李的交通樞紐。",
+              ["地標", "不夜城"],
+            ],
+            ["三成站", "COEX Mall、COEX 水族館、星空圖書館", ["圖書館"]],
+            ["江南站", "江南地下街", []],
+          ],
+        ],
+        [
+          "3號線",
+          "#fa5f2c",
+          "🧡",
+          [
+            [
+              "安國站 (三清洞/北村韓屋村)",
+              "傳統與現代交織！著名的北村八景韓屋建築群群聚於此，沿路開滿富有質感的傳統茶屋、現代咖啡廳與網美打卡店。",
+              ["韓屋村", "傳統文化"],
+            ],
+            [
+              "景福宮站",
+              "韓國代表性古宮殿。換上傳統韓服即可「免費入場」參觀，楓葉季時宮殿內部的庭園景色美不勝收。",
+              ["古宮", "韓服體驗"],
+            ],
+            [
+              "新沙站 (新沙洞林蔭道)",
+              "高質感逛街聖地。街道兩側遍布銀杏樹與歐風露天咖啡廳，聚集許多新興的韓國設計師潮流服飾店與大型旗艦店。",
+              ["時尚", "林蔭道"],
+            ],
+            ["狎鷗亭", "", []],
+            ["高速巴士客運站", "高速巴士地下街", []],
+          ],
+        ],
+        [
+          "4號線",
+          "#389ce3",
+          "💙",
+          [
+            [
+              "明洞站",
+              "觀光客掃貨大本營！超大型的 Olive Young 旗艦店與各式美妝店、大創百貨、大使館優質換錢所通通在這一站。",
+              ["Olive Young", "換錢"],
+            ],
+            [
+              "忠武路站 / 南山谷韓屋村",
+              "距離明洞僅一站之遙，有別於北村的大規模，這裡是一處小巧精緻的傳統韓屋庭園，還能遠眺南山首爾塔。",
+              ["韓屋", "首爾塔景點"],
+            ],
+            [
+              "惠化站 (大學路)",
+              "充滿文藝與劇場氣息的大學商圈，附近的小劇場林立，周邊駱山公園的城墎更是俯瞰首爾夜景的知名約會景點。",
+              ["夜景", "大學商圈"],
+            ],
+          ],
+        ],
+        [
+          "5號線",
+          "#9B5094",
+          "💜",
+          [
+            ["汝矣島站 / 汝矣渡口站", "汝矣島公園、IFC Mall、63大廈", ["汝矣島百貨"]],
+            ["光化門站", "Olive Better、光化門", []],
+            [
+              "鐘路3街站",
+              "近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。",
+              ["益善洞"],
+            ],
+          ],
+        ],
+      ];
 
-        <div class="card border-gray" style="border-left-width: 5px;">
-            <h5>　❌禁止隨身攜帶各式刀具、超過100ml的液體</h5>
-            <div class="checklist-section">
-                <div class="checklist-title"> · 重要證件</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>護照（效期 6 個月以上）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>身分證、機票登機證</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>SIM / eSIM（確認憑證）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>e-Arrived Card （前3天填寫電子入境）</span></label>
-                </div>
-            </div>
-
-            <div class="checklist-section">
-                <div class="checklist-title"> · 交通摳摳</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>新台幣（2-3萬）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>韓元現金</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>海外高回饋信用卡</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>WOWPASS / T-money交通卡</span></label>
-                </div>
-            </div>
-
-            <div class="checklist-section">
-                <div class="checklist-title"> · 電子產品</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>手機</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>耳機</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>充電線</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>轉接頭</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>行動電源（隨身登機清楚的 Wh 標示）</span></label>
-                </div>
-            </div>
-
-            <div class="checklist-section">
-                <div class="checklist-title"> · 個人衣物</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>上衣</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>褲子</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>內衣褲（3套）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>襪子（3雙）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>好走的休閒鞋</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>外套（無印鋪棉）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>圍巾</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>口罩</span></label>
-                </div>
-            </div>
-
-            <div class="checklist-section">
-                <div class="checklist-title"> · 盥洗用品</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>牙刷/牙膏</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>洗臉巾</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>乾淨毛巾（1-2條）</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>護唇膏</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>護手霜</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>乳液</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>化妝品</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>防曬乳</span></label>
-                </div>
-            </div>
-
-            <div class="checklist-section">
-                <div class="checklist-title"> · 其他用品</div>
-                <div class="checklist-grid">
-                    <label class="todo-item"><input type="checkbox"><span>環保購物袋</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>摺疊傘</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>水壺</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>夾鏈袋</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>衛生紙</span></label>
-                    <label class="todo-item"><input type="checkbox"><span>濕紙巾</span></label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== DAY 1 ==================== -->
-    <div id="day1" class="day-content">
-        <div class="header">
-            <h1>抵達首爾 · 明洞掃貨 × 乙支路 🛍️</h1>
-            <p>07:50 桃園出發 → 11:20 仁川落地，下午開始活動</p>
-        </div>
-
-        <div class="card border-gray">
-            <div class="time">04:30 - 05:30</div>
-            <div class="title"> 出發到桃園機場1航</div>
-            <div class="content"></div>
-        </div>
-
-        <div class="card border-blue">
-            <div class="time">11:20 – 13:30</div>
-            <div class="title">✈️ 仁川機場 → 入住乙支路</div>
-            <div class="content">搭 AREX 直達首爾站吃午餐小逛LOTTE超市，再至東大門站 12 號出口寄放行李。</div>
-            <div class="tag-container"><div class="tag">交通</div></div>
-        </div>
-
-        <div class="card border-blue">
-            <div class="time">14:00 – 15:00</div>
-            <div class="title">💱 明洞大使館換錢 + 掃貨</div>
-            <div class="content">中國大使館旁外幣兌換所，匯率是明洞一帶最優惠的。換好錢後逛 Olive Young 明洞旗館店、大創一次搞定。</div>
-            <div class="tag-container">
-                <div class="tag">換錢</div>
-                <div class="tag">大創</div>
-                <div class="tag highlight">Olive Young</div>
-                <div class="tag highlight">記得帶護照</div>
-            </div>
-        </div>
-
-        <div class="card border-purple">
-            <div class="time">15:00 – 17:30</div>
-            <div class="title">🛍️ 光化門站 Olive Better</div>
-            <div class="content">先搭地鐵到光化門站逛 Olive Better，這間在台灣比較沒有，趁早掃貨。</div>
-            <div class="tag-container">
-                <div class="tag">Olive Better</div>
-            </div>
-        </div>
-
-        <div class="card border-green">
-            <div class="time">18:00 – 19:30</div>
-            <div class="title">🚶 乙支路街區漫步</div>
-            <div class="content">回住宿附近，感受乙支路復古工業區的老街氛圍，老鐵工廠旁夾帶著個性小店，傍晚光線特別好拍。</div>
-            <div class="tag-container">
-                <div class="tag">散步</div>
-            </div>
-        </div>
-
-        <div class="card border-orange">
-            <div class="time">19:30 – 21:00</div>
-            <div class="title">🍗 住宿附近 BBQ 炸雞</div>
-            <div class="content">第一天輕鬆收尾，住宿附近找一間 BBQ 炸雞，配汽水，累了一天最療癒的選擇。</div>
-            <div class="tag-container">
-                <div class="tag">晚餐</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== DAY 2 ==================== -->
-    <div id="day2" class="day-content">
-        <div class="header">
-            <h1>聖水洞 × 首爾林 🍂</h1>
-            <p>10 月下旬楓葉季，聖水洞一日深度探索</p>
-        </div>
-
-        <div class="card border-green">
-            <div class="time">09:00 – 11:30</div>
-            <div class="title">🌿 首爾林 (서울숲) 晨間散步</div>
-            <div class="content">10 月下旬楓葉正美，免費入場，早上人最少景色最好。從住宿搭地鐵約 10 分鐘。</div>
-            <div class="tag-container">
-                <div class="tag">公園</div>
-                <div class="tag">免費</div>
-            </div>
-        </div>
-
-        <div class="card border-pink">
-            <div class="time">12:00 – 13:30</div>
-            <div class="title">🍽️ 조조칼국수</div>
-            <div class="content">蛤蠣刀削麵、海鮮煎餅～　分量超大!!</div>
-
-            <div class="title">🥞 5TO7 Cafe</div>
-            <div class="content">評分 4.8 的舒芙蕾鬆餅名店，12:00 準時開門，招牌鬆餅會抖動！建議提早到附近等候。</div>
-            <div class="tag-container">
-                <div class="tag">舒芙蕾</div>
-                <div class="tag">必吃</div>
-            </div>
-        </div>
-
-        <div class="card border-blue">
-            <div class="time">14:00 – 17:30</div>
-            <div class="title">🛍️ 聖水洞咖啡街</div>
-            <div class="content">老工廠改造的選品店與個性咖啡廳，這裡才是首爾潮流真正前線。</div>
-            <div class="tag-container">
-                <div class="tag">選品店</div>
-                <div class="tag">聖水洞</div>
-            </div>
-        </div>
-
-        <div class="card border-orange">
-            <div class="time">18:30 – 21:00</div>
-            <div class="title">🥩 </div>
-            <div class="content">濟州島熟成黑豬木炭烤，評分 4.8，口感跟普通韓國烤肉完全不同層次。走路回住宿超方便。</div>
-            <div class="tag-container">
-                <div class="tag">晚餐</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== DAY 3 ==================== -->
-    <div id="day3" class="day-content">
-        <div class="header">
-            <h1>望遠市場 × 延南洞 🌿</h1>
-            <p>在地市場早市，接著漫步延南洞咖啡街與選品巷弄</p>
-        </div>
-
-        <div class="card border-pink">
-            <div class="time">08:00 – 09:00</div>
-            <div class="title">☕ CONIS 早餐 (코니스)</div>
-            <div class="content">延南洞評分 5.0 的寶藏小店，8:00 準時開門，自製司康+每天現泡奶茶，店員超親切。週三正常營業 ✅</div>
-            <div class="tag-container">
-                <div class="tag">早餐</div>
-                <div class="tag">延南洞</div>
-            </div>
-        </div>
-
-        <div class="card border-green">
-            <div class="time">09:30 – 11:00</div>
-            <div class="title">🛒 望遠市場 (망원시장)</div>
-            <div class="content">首爾在地感最強的傳統早市，觀光客少、阿珠媽多。辣炒年糕、海鮮煎餅份量大又便宜，平日早上人最少。</div>
-            <div class="tag-container">
-                <div class="tag">市場</div>
-                <div class="tag">小吃</div>
-            </div>
-        </div>
-
-        <div class="card border-green">
-            <div class="time">11:00 – 12:30</div>
-            <div class="title">🌳 京義線森林公園散步</div>
-            <div class="content">沿廢棄鐵道改建的綠廊步行從望遠走向延南洞，10 月楓葉超美，兩側都是獨立咖啡廳，自然過渡到延南洞。</div>
-            <div class="tag-container">
-                <div class="tag">散步</div>
-                <div class="tag">免費</div>
-            </div>
-        </div>
-
-        <div class="card border-pink">
-            <div class="time">12:30 – 14:00</div>
-            <div class="title">☕ Greem Cafe (그림 카페)</div>
-            <div class="content">延南洞最具話題的咖啡廳，整間店設計成漫畫黑白線稿風格，桌椅牆壁全像從漫畫走出來。週三 11:00 開門 ✅</div>
-            <div class="tag-container">
-                <div class="tag">咖啡廳</div>
-                <div class="tag">打卡</div>
-            </div>
-        </div>
-
-        <div class="card border-blue">
-            <div class="time">14:00 – 17:30</div>
-            <div class="title">🛍️ 延南洞巷弄漫步</div>
-            <div class="content">首爾最多元的獨立書店、古著店、韓國設計師選品店都藏在這裡，沒有既定路線，跟著感覺钻巷子就對了。</div>
-            <div class="tag-container">
-                <div class="tag">選品店</div>
-                <div class="tag">古著</div>
-            </div>
-        </div>
-
-        <div class="card border-orange">
-            <div class="time">18:30 – 21:00</div>
-            <div class="title">🍽️ Hippo Brunchhaus (히포 브런치하우스)</div>
-            <div class="content">評分 4.7，份量超大的早午餐名店，法式吐司和招牌套餐很多人回訪。延南洞完美收尾，21:30 打烊。</div>
-            <div class="tag-container">
-                <div class="tag">晚餐</div>
-                <div class="tag">份量大</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== DAY 4 ==================== -->
-    <div id="day4" class="day-content">
-        <div class="header">
-            <h1>返程日 · 起床出發 ✈️</h1>
-            <p>班機 12:30，最晚 08:40 須出門搭機場巴士</p>
-        </div>
-
-        <div class="card border-green">
-            <div class="time">07:00 – 08:20</div>
-            <div class="title">🍳 起床 + 住宿附近吃早餐</div>
-            <div class="content">輕鬆吃個早餐，整理行李，把握最後的首爾晨曦。住宿旁便利商店或小食堂都可以。</div>
-            <div class="tag-container"><div class="tag">Wageurwageul</div></div>
-        </div>
-
-        <div class="card border-blue">
-            <div class="time">08:30 搭車</div>
-            <div class="title">🚇 搭機場巴士前往仁川機場</div>
-            <div class="content">從住宿搭機場巴士車程約 60 至 80 分鐘抵達仁川機場，10:00 前抵達機場辦理登機手續。</div>
-            <div class="tag-container"><div class="tag">交通</div></div>
-        </div>
-
-        <div class="card border-orange">
-            <div class="time">12:30 登機</div>
-            <div class="title">✈️ 仁川 → 桃園，預計14:20 抵達</div>
-            <div class="content">滿載而歸，帶著滿滿戰利品平安回台灣！</div>
-            <div class="tag-container"><div class="tag">肥家</div></div>
-        </div>
-    </div>
-
-    <!-- ==================== 清單頁面 ==================== -->
-    <div id="daylist" class="day-content">
-        <div class="header">
-            <h1>📝 旅程待辦與購物清單</h1>
-            <p>點擊下方小標籤，切換清單項目！</p>
-        </div>
-
-        <div class="sub-tab-menu">
-            <button class="sub-tab-btn active list-sub" onclick="switchList('list1', this)">全部</button>
-            <button class="sub-tab-btn list-sub" onclick="switchList('list2', this)">景點</button>
-            <button class="sub-tab-btn list-sub" onclick="switchList('list3', this)">美食</button>
-            <button class="sub-tab-btn list-sub" onclick="switchList('list4', this)">咖啡廳</button>
-            <button class="sub-tab-btn list-sub" onclick="switchList('list5', this)">購物</button>
-        </div>
-
-        <!-- 全部：直接帶出＂景點＂到＂購物＂的所有內容，並以直線進行區塊切割分界 -->
-        <div id="list1" class="list-content active">
-            <div class="card border-gray">
-                <!-- 景點區塊 -->
-                <div class="checklist-section divider">
-                    <div class="checklist-title"> · 景點</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>首爾林 (賞楓、銀杏步道)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>乙支路復古老街散步</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>京義線森林公園</span></label>
-                    </div>
-                </div>
-                <!-- 美食區塊 -->
-                <div class="checklist-section divider">
-                    <div class="checklist-title"> · 美食</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>조조칼국수 (蛤蠣刀削麵/海鮮煎餅)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>BBQ 炸雞 (住宿附近外帶)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>濟州島熟成黑豬木炭烤肉</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>望遠市場小吃 (辣炒年糕)</span></label>
-                    </div>
-                </div>
-                <!-- 咖啡廳區塊 -->
-                <div class="checklist-section divider">
-                    <div class="checklist-title"> · 咖啡廳</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>5TO7 Cafe (招牌抖動舒芙蕾)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>CONIS 延南洞早餐 (司康+現泡奶茶)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>Greem Cafe (黑白漫畫風格插畫風)</span></label>
-                    </div>
-                </div>
-                <!-- 購物區塊 -->
-                <div class="checklist-section divider">
-                    <div class="checklist-title"> · 購物</div>
-                    <div class="sub-tab-menu olive-tab-menu">             
-                        <button class="sub-tab-btn active shop-olive-young btn-young" data-target="olive-young" onclick="switchShopSubLine(this)">Olive Young</button>             
-                        <button class="sub-tab-btn shop-olive-better btn-better" data-target="olive-better" onclick="switchShopSubLine(this)">Olive Better</button>
-                        <button class="sub-tab-btn shop-daiso btn-daiso" data-target="daiso" onclick="switchShopSubLine(this)">Daiso</button>      
-                    </div>
-                
-                    <div class="shop-sub-content olive-young-content active">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Olive Young (明洞旗艦店)</span></label>
-                        </div>
-                    </div>
-                
-                    <div class="shop-sub-content olive-better-content">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Olive Better（光化門）</span></label>
-                        </div>
-                    </div>
-
-                    <div class="shop-sub-content daiso-content">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Daiso</span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 景點獨立頁籤 -->
-        <div id="list2" class="list-content">
-            <div class="card border-gray">
-                <div class="checklist-section">
-                    <div class="checklist-title"> · 景點</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>首爾林 (賞楓、銀杏步道)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>聖水洞咖啡街</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>京義線森林公園</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>望遠市場</span></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 美食獨立頁籤 -->
-        <div id="list3" class="list-content">
-            <div class="card border-gray">
-                <div class="checklist-section">
-                    <div class="checklist-title"> · 美食</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>조조칼국수 (蛤蠣刀削麵/海鮮煎餅)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>BBQ 炸雞 (住宿附近)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>鐘路蒜蓉辣雞湯（弘大）</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>望遠市場小吃 (辣炒年糕)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>Hansari馬鈴薯排骨湯 (忠武路)</span></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 咖啡廳獨立頁籤 -->
-        <div id="list4" class="list-content">
-            <div class="card border-gray">
-                <div class="checklist-section">
-                    <div class="checklist-title"> · 咖啡廳</div>
-                    <div class="list-vertical">
-                        <label class="todo-item"><input type="checkbox"><span>5TO7 Cafe (招牌抖動舒芙蕾)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>CONIS 延南洞早餐 (司康+現泡奶茶)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>Greem Cafe (黑白漫畫風格插畫風)</span></label>
-                        <label class="todo-item"><input type="checkbox"><span>Cafe Onion (聖水早午餐)</span></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 購物獨立頁籤 -->
-        <div id="list5" class="list-content">
-            <div class="card border-gray">
-                <div class="checklist-section">
-                    <div class="checklist-title"> · 購物</div>
-
-                    <div class="sub-tab-menu olive-tab-menu">             
-                        <button class="sub-tab-btn active shop-olive-young btn-young" data-target="olive-young" onclick="switchShopSubLine(this)">Olive Young</button>             
-                        <button class="sub-tab-btn shop-olive-better btn-better" data-target="olive-better" onclick="switchShopSubLine(this)">Olive Better</button>
-                        <button class="sub-tab-btn shop-daiso btn-daiso" data-target="daiso" onclick="switchShopSubLine(this)">Daiso</button>         
-                    </div>      
-
-                    <div class="shop-sub-content olive-young-content active">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Olive Young (明洞旗艦店)</span></label>
-                        </div>
-                    </div>      
-
-                    <div class="shop-sub-content olive-better-content">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Olive Better（光化門）</span></label>
-                        </div>
-                    </div>
-
-                    <div class="shop-sub-content daiso-content">
-                        <div class="list-vertical">
-                            <label class="todo-item"><input type="checkbox"><span>Daiso</span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 備註 ==================== -->
-    <div id="daymemo" class="day-content">
-        <div class="header">
-            <h1> ✨ 注意事項 ✨ </h1>
-        </div>
-        <div class="card border-gray">
-            <div class="title"> SES 自動通關</div>
-            <div class="content">　時間：09:00～18:00（中午12:00～13:00休息）</div>
-            <div class="content">　地點：首爾站B2「機場快線AREX」的搭乘入口旁邊</div>
-            <div class="content"><br>　時間：24小時</div>
-            <div class="content">　地點：仁川機場2航入境前A區</div>
-            <div class="tag-container"><div class="tag">SES</div></div>
-        </div>
-        <div class="card border-gray">
-            <div class="title"> 必裝 APP</div>
-            <div class="content">　NAVER Map（地圖）</div>
-            <div class="content">　SMARTPASS（快速出境）</div>
-            <div class="content">　CATCH TABLE（餐廳訂位）</div>
-            <div class="tag-container"><div class="tag">APP</div></div>
-        </div>
-        <div class="card border-gray">
-            <div class="title"> 天氣預報</div>
-            <div class="content">　秋季（9～11月）：3～25度，早晚溫差大</div>
-            <div class="content">　洋蔥式穿搭： 白天舒適溫暖，可穿長袖上衣、薄毛衣或帽T。</div>
-            <div class="content">　必備防風外套、風衣、針織衫或輕便薄大衣，方便在早晚氣溫骤降時穿脫。</div>
-            <div class="tag-container"><div class="tag">穿搭</div></div>
-        </div>
-    </div>
-
-    <!-- ==================== 地鐵 ==================== -->
-    <div id="daytraffic" class="day-content">
-        <div class="header">
-            <h1>🚇 首爾地鐵沿線景點懶人包</h1>
-            <p>點擊下方地鐵線小標籤，可以快速切換各路線的核心觀光站點與特別景點！</p>
-        </div>
-
-        <div class="sub-tab-menu">
-            <button class="sub-tab-btn active line-1" onclick="switchLine('line1', this)">1號線</button>
-            <button class="sub-tab-btn line-2" onclick="switchLine('line2', this)">2號線</button>
-            <button class="sub-tab-btn line-3" onclick="switchLine('line3', this)">3號線</button>
-            <button class="sub-tab-btn line-4" onclick="switchLine('line4', this)">4號線</button>
-            <button class="sub-tab-btn line-5" onclick="switchLine('line5', this)">5號線</button>
-        </div>
-
-        <div id="line1" class="line-content active">
-            <div class="card border-line1">
-                <div class="title">💙 首爾站</div>
-                <div class="content">最重要的交通大樞紐！不論是往返機場的 AREX 直達車，還是市區 KTX 都在這裡匯集。出站即有超大型樂天超市，方便最後大補貨。</div>
-                <div class="tag-container"><div class="tag">AREX</div><div class="tag">樂天超市</div></div>
-            </div>
-            <div class="card border-line1">
-                <div class="title">💙 鐘路3街站 (益善洞)</div>
-                <div class="content">近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。</div>
-                <div class="tag-container"><div class="tag">益善洞</div><div class="tag">老屋咖啡</div></div>
-            </div>
-            <div class="card border-line1">
-                <div class="title">💙 鐘路5街站</div>
-                <div class="content">廣藏市場、清溪川</div>
-                <div class="tag-container"><div class="tag">廣藏市場</div></div>
-            </div>
-            <div class="card border-line1">
-                <div class="title">💙 東大門</div>
-                <div class="content">DDP 設計廣場、Doota Mall、樂天百貨、陳玉華奶奶一隻雞</div>
-                <div class="tag-container"><div class="tag">No Brand</div><div class="tag">燉雞</div></div>
-            </div>
-        </div>
-
-        <div id="line2" class="line-content">
-            <div class="card border-line2">
-                <div class="title">💚 聖水站 / 首爾林站</div>
-                <div class="content">首爾潮流前線！由老舊工廠與鐵工廠改建的個性選品店、文青咖啡廳街。旁邊的首爾林更是秋天賞楓與銀杏的絕美秘境。</div>
-                <div class="tag-container"><div class="tag">聖水洞</div><div class="tag highlight">楓葉季</div></div>
-            </div>
-            <div class="card border-line2">
-                <div class="title">💚 弘大入口站 / 延南洞</div>
-                <div class="content">充滿年輕活力的街區！延南洞巷弄內藏有非常多獨立書店、古著選品店、漫畫風網美咖啡廳。京義線森林公園也非常適合下午散步。</div>
-                <div class="tag-container"><div class="tag">逛街</div><div class="tag">咖啡廳</div></div>
-            </div>
-            <div class="card border-line2">
-                <div class="title">💚 東大門歷史文化公園站</div>
-                <div class="content">經典地標 DDP 東大門設計廣場，不定期有各式展覽。周邊是著名的服飾批發不夜城與寄放行李的交通樞紐。</div>
-                <div class="tag-container"><div class="tag">地標</div><div class="tag">不夜城</div></div>
-            </div>
-            <div class="card border-line2">
-                <div class="title">💚 三成站</div>
-                <div class="content">COEX Mall、COEX 水族館、星空圖書館</div>
-                <div class="tag-container"><div class="tag">圖書館</div></div>
-            </div>
-            <div class="card border-line2">
-                <div class="title">💚 江南站</div>
-                <div class="content">江南地下街</div>
-                <div class="tag-container"></div>
-            </div>
-        </div>
-
-        <div id="line3" class="line-content">
-            <div class="card border-line3">
-                <div class="title">🧡 安國站 (三清洞/北村韓屋村)</div>
-                <div class="content">傳統與現代交織！著名的北村八景韓屋建築群群聚於此，沿路開滿富有質感的傳統茶屋、現代咖啡廳與網美打卡店。</div>
-                <div class="tag-container"><div class="tag">韓屋村</div><div class="tag">傳統文化</div></div>
-            </div>
-            <div class="card border-line3">
-                <div class="title">🧡 景福宮站</div>
-                <div class="content">韓國代表性古宮殿。換上傳統韓服即可「免費入場」參觀，楓葉季時宮殿內部的庭園景色美不勝收。</div>
-                <div class="tag-container"><div class="tag">古宮</div><div class="tag highlight">韓服體驗</div></div>
-            </div>
-            <div class="card border-line3">
-                <div class="title">🧡 新沙站 (新沙洞林蔭道)</div>
-                <div class="content">高質感逛街聖地。街道兩側遍布銀杏樹與歐風露天咖啡廳，聚集許多新興的韓國設計師潮流服飾店與大型旗艦店。</div>
-                <div class="tag-container"><div class="tag">時尚</div><div class="tag">林蔭道</div></div>
-            </div>
-            <div class="card border-line3">
-                <div class="title">🧡 狎鷗亭</div>
-                <div class="content"></div>
-                <div class="tag-container"><div class="tag"></div><div class="tag"></div></div>
-            </div>
-            <div class="card border-line3">
-                <div class="title">🧡 高速巴士客運站</div>
-                <div class="content">高速巴士地下街</div>
-                <div class="tag-container"><div class="tag"></div><div class="tag"></div></div>
-            </div>
-        </div>
-
-        <div id="line4" class="line-content">
-            <div class="card border-line4">
-                <div class="title">💙 明洞站</div>
-                <div class="content">觀光客掃貨大本營！超大型的 Olive Young 旗艦店與各式美妝店、大創百貨、大使館優質換錢所通通在這一站。</div>
-                <div class="tag-container"><div class="tag highlight">Olive Young</div><div class="tag">換錢</div></div>
-            </div>
-            <div class="card border-line4">
-                <div class="title">💙 忠武路站 / 南山谷韓屋村</div>
-                <div class="content">距離明洞僅一站之遙，有別於北村的大規模，這裡是一處小巧精緻的傳統韓屋庭園，還能遠眺南山首爾塔。</div>
-                <div class="tag-container"><div class="tag">韓屋</div><div class="tag">首爾塔景點</div></div>
-            </div>
-            <div class="card border-line4">
-                <div class="title">💙 惠化站 (大學路)</div>
-                <div class="content">充滿文藝與劇場氣息的大學商圈，附近的小劇場林立，周邊駱山公園的城墎更是俯瞰首爾夜景的知名約會景點。</div>
-                <div class="tag-container"><div class="tag">夜景</div><div class="tag">大學商圈</div></div>
-            </div>
-        </div>
-
-        <div id="line5" class="line-content">
-            <div class="card border-line5">
-                <div class="title">💜 汝矣島站 / 汝矣渡口站</div>
-                <div class="content">汝矣島公園、IFC Mall、63大廈</div>
-                <div class="tag-container"><div class="tag">汝矣島百貨</div></div>
-            </div>
-            <div class="card border-line5">
-                <div class="title">💜 光化門站</div>
-                <div class="content">Olive Better、光化門</div>
-                <div class="tag-container"></div>
-            </div>
-            <div class="card border-line5">
-                <div class="title">💜 鐘路3街站</div>
-                <div class="content">近年極受歡迎的狹窄韓屋巷弄。老屋內翻修成充滿驚喜的麵包店、復古咖啡廳及文創小物店，氣氛非常迷人。</div>
-                <div class="tag-container"><div class="tag">益善洞</div></div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- JavaScript 控制分頁切換核心邏輯 -->
-<script>
-    // 頂部大分頁切換 (行李準備, Day1~4, 清單, 備註, 地鐵)
-    function switchDay(dayId, btn) {
-        // 隱藏所有分頁內容
-        const contents = document.querySelectorAll('.day-content');
-        contents.forEach(content => content.classList.remove('active'));
-        
-        // 移除所有大按鈕 active 樣式
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(button => button.classList.remove('active'));
-        
-        // 顯示對應分頁
-        document.getElementById('day' + dayId).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    // 清單子分頁切換 (全部, 景點, 美食, 咖啡廳, 購物)
-    function switchList(listId, btn) {
-        const contents = document.querySelectorAll('.list-content');
-        contents.forEach(content => content.classList.remove('active'));
-        
-        const buttons = btn.parentElement.querySelectorAll('.sub-tab-btn');
-        buttons.forEach(button => button.classList.remove('active'));
-        
-        document.getElementById(listId).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    // 地鐵子分頁切換 (1~5號線)
-    function switchLine(lineId, btn) {
-        const contents = document.querySelectorAll('.line-content');
-        contents.forEach(content => content.classList.remove('active'));
-        
-        const buttons = btn.parentElement.querySelectorAll('.sub-tab-btn');
-        buttons.forEach(button => button.classList.remove('active'));
-        
-        document.getElementById(lineId).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    // 控制購物（#list5）內部第三層子頁籤切換的邏輯
-    function switchShopSubLine(clickedButton) {
-        // 1. 獲取當前點擊的目標類型
-        const targetType = clickedButton.getAttribute('data-target');
-        
-        // 2. 找出全網頁中，所有包含這個購物頁籤的父層區塊（即 list1 和 list5）
-        const allLists = document.querySelectorAll('.list-content');
-        
-        allLists.forEach(listContainer => {
-            // 3. 在每個容器內部，尋找對應的按鈕群並切換 active
-            const youngBtn = listContainer.querySelector('.btn-young');
-            const betterBtn = listContainer.querySelector('.btn-better');
-            const daisoBtn = listContainer.querySelector('.btn-daiso');
-            
-            // 4. 在每個容器內部，尋找對應的內容區塊
-            const youngContent = listContainer.querySelector('.olive-young-content');
-            const betterContent = listContainer.querySelector('.olive-better-content');
-            const daisoContent = listContainer.querySelector('.daiso-content');
-            
-            // 5. 根據點擊的類型，進行精確的顯示/隱藏與按鈕高亮
-            if (targetType === 'olive-young') {
-                if (youngBtn) youngBtn.classList.add('active');
-                if (betterBtn) betterBtn.classList.remove('active');
-                if (daisoBtn) daisoBtn.classList.remove('active');
-                if (youngContent) youngContent.classList.add('active');
-                if (betterContent) betterContent.classList.remove('active');
-                if (daisoContent) daisoContent.classList.remove('active');
-            } else if (targetType === 'olive-better') {
-                if (youngBtn) youngBtn.classList.remove('active');
-                if (betterBtn) betterBtn.classList.add('active');
-                if (daisoBtn) daisoBtn.classList.remove('active');
-                if (youngContent) youngContent.classList.remove('active');
-                if (betterContent) betterContent.classList.add('active');
-                if (daisoContent) daisoContent.classList.remove('active');
-            } else if (targetType === 'daiso') {
-                if (youngBtn) youngBtn.classList.remove('active');
-                if (betterBtn) betterBtn.classList.remove('active');
-                if (daisoBtn) daisoBtn.classList.add('active');
-                if (youngContent) youngContent.classList.remove('active');
-                if (betterContent) betterContent.classList.remove('active');
-                if (daisoContent) daisoContent.classList.add('active');
-            }
+      const nav = (q) =>
+        `<a class="nav-btn" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(q)}" target="_blank" rel="noopener">🧭 導航</a>`;
+      const chk = (t) =>
+        `<label class="check-item"><input type="checkbox"><span>${t}</span></label>`;
+      const tags = (a = [], h = []) =>
+        a.length || h.length
+          ? `<div class="tags">${a.map((x) => `<span class="tag">${x}</span>`).join("")}${h.map((x) => `<span class="tag hl">${x}</span>`).join("")}</div>`
+          : "";
+      let html = "";
+      for (const k in D) {
+        const d = D[k];
+        html += `<section class="day" id="day-${k}"><div class="day-head"><span class="day-num display">${d.n}</span><h2 class="day-title">${d.t}</h2><span class="day-date">${d.d}</span></div><p class="day-theme">${d.s}</p>`;
+        d.st.forEach((s) => {
+          html += `<div class="stop"><div class="rail"><span class="time">${s.t}</span><span class="dot" style="background:${C[k]}"></span></div><div class="stop-body"><p class="stop-name">${s.n}</p>${s.c ? `<p class="stop-note">${s.c}</p>` : ""}${s.x ? `<p class="stop-name second">${s.x.n}</p><p class="stop-note">${s.x.c}</p>` : ""}${tags(s.tg, s.hl)}${(s.p || []).map((p) => nav(p[3])).join("")}</div></div>`;
         });
-    }
-</script>
+        html += `</section>`;
+      }
+      html = `<div id="days">${html}</div>`;
+      // 清單
+      html += `<div id="lists-wrap" style="display:none"><section class="day" id="lists"><div class="day-head"><h2 class="day-title">📝 旅程待辦與購物清單</h2></div><p class="day-theme">點擊下方小標籤，切換清單項目！</p><div class="chips" id="ltabs"></div><div id="lbody"></div></section></div>`;
+      // 地鐵
+      html += `<div id="subway-wrap" style="display:none"><section class="day" id="subway"><div class="day-head"><h2 class="day-title">🚇 首爾地鐵沿線景點懶人包</h2></div><p class="day-theme">點擊下方地鐵線小標籤，可以快速切換各路線的核心觀光站點與特別景點！</p><div class="chips" id="stabs"></div><div id="sbody"></div></section></div>`;
+      document.getElementById("main").innerHTML = html;
 
-</body>
+      // 行李
+      document.getElementById("pack").innerHTML =
+        `<p class="warn">❌禁止隨身攜帶各式刀具、超過100ml的液體</p>` +
+        PACK.map(
+          ([h, a]) => `<div class="checklist-card"><h4>${h}</h4>${a.map(chk).join("")}</div>`,
+        ).join("");
+
+      // 清單 tabs
+      function showList(k, btn) {
+        document.querySelectorAll("#ltabs button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const body =
+          k === "sh"
+            ? SH.map(([h, a]) => `<div class="sub-title">· ${h}</div>${a.map(chk).join("")}`)
+            : LISTS[k].map(([h, a]) => `<div class="sub-title">· ${h}</div>${a.map(chk).join("")}`);
+        document.getElementById("lbody").innerHTML =
+          `<div class="checklist-card" style="padding-top:6px">${body.join("")}</div>`;
+      }
+      LTABS.forEach(([k, l], i) => {
+        const b = document.createElement("button");
+        b.textContent = l;
+        b.onclick = () => showList(k, b);
+        document.getElementById("ltabs").appendChild(b);
+        if (!i) b.click();
+      });
+
+      // 地鐵 tabs
+      function showLine(i, btn) {
+        document.querySelectorAll("#stabs button").forEach((b) => {
+          b.classList.remove("active");
+          b.style.background = "";
+        });
+        btn.classList.add("active");
+        btn.style.background = SUB[i][1];
+        document.getElementById("sbody").innerHTML = SUB[i][3]
+          .map(
+            ([t, c, tg]) =>
+              `<div class="lcard" style="border-left-color:${SUB[i][1]}"><p class="stop-name">${SUB[i][2]} ${t}</p>${c ? `<p class="stop-note">${c}</p>` : ""}${tags(tg)}</div>`,
+          )
+          .join("");
+      }
+      SUB.forEach((l, i) => {
+        const b = document.createElement("button");
+        b.textContent = l[0];
+        b.onclick = () => showLine(i, b);
+        document.getElementById("stabs").appendChild(b);
+        if (!i) b.click();
+      });
+
+      // 地圖
+      const map = L.map("map", { scrollWheelZoom: false }).setView([37.55, 126.99], 11);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+        maxZoom: 18,
+      }).addTo(map);
+      const icon = (c) =>
+        L.divIcon({
+          className: "",
+          html: `<div class="pin" style="background:${c}"></div>`,
+          iconSize: [16, 16],
+          iconAnchor: [8, 14],
+        });
+      const layers = {},
+        pts = {};
+      for (const k in D) {
+        const g = L.layerGroup(),
+          ll = [];
+        D[k].st.forEach((s) =>
+          (s.p || []).forEach((p) => {
+            ll.push([p[1], p[2]]);
+            L.marker([p[1], p[2]], { icon: icon(C[k]) })
+              .bindPopup(
+                `<b>${p[0]}</b><br>${s.t}<br><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p[3])}" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:12px;color:${C[k]};text-decoration:none;border:1px solid ${C[k]}55;border-radius:20px;padding:4px 10px">🧭 導航</a>`,
+              )
+              .addTo(g);
+          }),
+        );
+        L.polyline(ll, { color: C[k], weight: 3, opacity: 0.75, dashArray: "2 8" }).addTo(g);
+        g.addTo(map);
+        layers[k] = g;
+        pts[k] = ll;
+      }
+      const all = Object.values(pts).flat();
+      const F = [
+        ["all", "全部"],
+        ...Object.keys(D).map((k) => [k, "Day " + k]),
+        ["pack", "📋 打包清單"],
+        ["lists", "📝 旅程清單"],
+        ["subway", "🚇 地鐵"],
+      ];
+      const $ = (id) => document.getElementById(id);
+      const fb = $("filters"),
+        mapEl = $("map"),
+        note = $("mapnote");
+      const panels = { pack: $("pack"), lists: $("lists-wrap"), subway: $("subway-wrap") };
+      F.forEach(([v, l], i) => {
+        const b = document.createElement("button");
+        b.innerHTML = (C[v] ? `<span class="sw" style="background:${C[v]}"></span>` : "") + l;
+        if (!i) b.classList.add("active");
+        b.onclick = () => {
+          fb.querySelectorAll("button").forEach((x) => {
+            x.classList.remove("active");
+            x.style.background = "";
+          });
+          b.classList.add("active");
+          b.style.background = C[v] || (panels[v] ? "#CE9A3D" : "");
+          const isPanel = !!panels[v];
+          for (const k in panels)
+            panels[k].style.display = k === v ? (k === "pack" ? "grid" : "block") : "none";
+          $("days").style.display = isPanel ? "none" : "";
+          if (isPanel) Object.keys(D).forEach((k) => ($("day-" + k).style.display = ""));
+          mapEl.style.display = note.style.display = isPanel ? "none" : "block";
+          if (isPanel) return;
+          map.invalidateSize();
+          for (const k in layers) {
+            const on = v === "all" || v === k;
+            if (on && !map.hasLayer(layers[k])) layers[k].addTo(map);
+            if (!on && map.hasLayer(layers[k])) map.removeLayer(layers[k]);
+          }
+          map.fitBounds(v === "all" ? all : pts[v], { padding: [40, 40] });
+          Object.keys(D).forEach((k) => {
+            $("day-" + k).style.display = v === "all" || v === k ? "" : "none";
+          });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+        fb.appendChild(b);
+      });
+      map.fitBounds(all, { padding: [30, 30] });
+    </script>
+  </body>
 </html>
